@@ -191,6 +191,9 @@ class parse_uri {
 	 * @return void
 	 */
 	private function parse_uri($uri) {
+		if ($this->error) {
+			return FALSE;
+		}
 		$t = $this;
 		$parsed   = parse_url((string) $uri);
 		$defaults = array(
@@ -253,6 +256,9 @@ class parse_uri {
 	 * @return array The URI as an array.
 	 */
 	public function arr() {
+		if ($this->error) {
+			return FALSE;
+		}
 		return array(
 			'scheme'    => $this->scheme,
 			'user'      => $this->user,
@@ -272,6 +278,9 @@ class parse_uri {
 	 * @return string The current URI.
 	 */
 	public function str() {
+		if ($this->error) {
+			return FALSE;
+		}
 		$t = $this;
 		$str = '';
 		if (!empty($t->scheme)) {
@@ -312,6 +321,9 @@ class parse_uri {
 	 * @return void
 	 */
 	public function p_str() {
+		if ($this->error) {
+			return FALSE;
+		}
 		echo $this->str();
 	}
 	
@@ -325,6 +337,9 @@ class parse_uri {
 	 * @return array The $path's information
 	 */
 	public function path_info() {
+		if ($this->error) {
+			return FALSE;
+		}
 		return pathinfo($this->path);
 	}
 	
@@ -339,6 +354,9 @@ class parse_uri {
 	 * @return string                  The resulting URI.
 	 */
 	public function append($section, $str, $disable_safety = FALSE) {
+		if ($this->error) {
+			return FALSE;
+		}
 		$uri = new phpUri($relative);
 		switch(true){
 			case !empty($uri->scheme): break;
@@ -375,7 +393,9 @@ class parse_uri {
 	 * @return string                  The resulting URI.
 	 */
 	public function prepend($section, $str, $disable_safety = FALSE) {
-		
+		if ($this->error) {
+			return FALSE;
+		}
 	}
 	
 	/**
@@ -390,7 +410,9 @@ class parse_uri {
 	 * @return string                  The resulting URI.
 	 */
 	public function replace($section, $str, $disable_safety = FALSE) {
-		
+		if ($this->error) {
+			return FALSE;
+		}
 	}
 	
 	/**
