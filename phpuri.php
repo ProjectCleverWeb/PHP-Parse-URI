@@ -312,7 +312,7 @@ class parse_uri {
 	 * @return void
 	 */
 	public function p_str() {
-		
+		echo $this->str();
 	}
 	
 	/**
@@ -325,7 +325,7 @@ class parse_uri {
 	 * @return array The $path's information
 	 */
 	public function path_info() {
-		
+		return pathinfo($this->path);
 	}
 	
 	/**
@@ -399,7 +399,6 @@ class parse_uri {
 	 * @return void
 	 */
 	public function reset() {
-		
+		$this->__construct($this->input);
 	}
 }
-?>
