@@ -18,7 +18,7 @@
  * @version 0.1.0
  * @see     http://en.wikipedia.org/wiki/URI_scheme
  */
-
+ 
 /**
  * Parse URI
  * 
@@ -32,6 +32,16 @@ class parse_uri {
 	/**
 	 * The original input to the class constructor.
 	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://example.com');
+	 * 
+	 * // output: http://example.com
+	 * echo $parse_uri->input;
+	 * 
+	 * // These are functionally identical
+	 * $parse_uri->__construct($parse_uri->input);
+	 * $parse_uri->reset();</pre>
+	 * 
 	 * @var string
 	 */
 	public $input;
@@ -40,10 +50,12 @@ class parse_uri {
 	 * The connection scheme. supports both explicit and
 	 * inherted schemes.
 	 * 
-	 * Example: http://
-	 * Example: ssh://
-	 * Example: //
-	 * Regex: ((http(s)?|(s)?ftp|ssh):)?\/\/
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('https://example.com');
+	 * 
+	 * // output: https://
+	 * echo $parse_uri->scheme;</pre>
+	 * Regex: <code>((http(s)?|(s)?ftp|ssh):)?\/\/</code>
 	 * 
 	 * @var string
 	 */
@@ -55,7 +67,28 @@ class parse_uri {
 	public $protocol;
 	
 	/**
+	 * The connection scheme name. This is always either
+	 * alpha characters or an emtpy string.
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('https://example.com');
+	 * 
+	 * // output: https
+	 * echo $parse_uri->scheme_name;</pre>
+	 * Regex: <code>(http(s)?|(s)?ftp|ssh)</code>
+	 * 
+	 * @var string
+	 */
+	public $scheme_name;
+	
+	/**
 	 * The username of the URI.
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('ftp://jdoe:test123@example.com');
+	 * 
+	 * // output: jdoe
+	 * echo $parse_uri->user;</pre>
 	 * 
 	 * @var string
 	 */
@@ -69,6 +102,12 @@ class parse_uri {
 	/**
 	 * The password of the URI.
 	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('ftp://jdoe:test123@example.com');
+	 * 
+	 * // output: test123
+	 * echo $parse_uri->pass;</pre>
+	 * 
 	 * @var string
 	 */
 	public $pass;
@@ -81,8 +120,12 @@ class parse_uri {
 	/**
 	 * The host of the URI. This is typically a FQDN.
 	 * 
-	 * Example: test123.example.com
-	 * Regex: ([a-z]([a-z0-9\-]+)?\.)+([a-z]+)$
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('//test.example.com');
+	 * 
+	 * // output: test.example.com
+	 * echo $parse_uri->host;</pre>
+	 * Regex: <code>([a-z]([a-z0-9\-]+)?\.)+([a-z]+)$</code>
 	 * 
 	 * @var string
 	 */
@@ -96,12 +139,24 @@ class parse_uri {
 	/**
 	 * The port of the URI as a string.
 	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('ssh://jdoe@example.com:700');
+	 * 
+	 * // output: 700
+	 * echo $parse_uri->port;</pre>
+	 * 
 	 * @var string
 	 */
 	public $port;
 	
 	/**
 	 * The authority string from the URI.
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://jdoe:test123@example.com:700/path/to/file.ext?q=1#frag');
+	 * 
+	 * // output: jdoe:test123@example.com:700
+	 * echo $parse_uri->authority;</pre>
 	 * 
 	 * @var string
 	 */
@@ -110,9 +165,11 @@ class parse_uri {
 	/**
 	 * The path of the URI.
 	 * 
-	 * Example: /Path/2/fiLe123.ext
-	 * Example: /file.ext
-	 * Example: /
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://example.com:700/path/to/file.ext?q=1#frag');
+	 * 
+	 * // output: /path/to/file.ext
+	 * echo $parse_uri->path</pre>
 	 * 
 	 * @var string
 	 */
@@ -121,7 +178,11 @@ class parse_uri {
 	/**
 	 * The query string of the URI.
 	 * 
-	 * Example: ?q=foo
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('example.com:700/path/to/file.ext?q=1#frag');
+	 * 
+	 * // output: q=1
+	 * echo $parse_uri->query</pre>
 	 * 
 	 * @var string
 	 */
@@ -130,7 +191,11 @@ class parse_uri {
 	/**
 	 * The fragment of the URI.
 	 * 
-	 * Example: #foo-bar
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('example.com:700/path/to/file.ext?q=1#frag');
+	 * 
+	 * // output: frag
+	 * echo $parse_uri->fragment</pre>
 	 * 
 	 * @var string
 	 */
@@ -147,6 +212,17 @@ class parse_uri {
 	/**
 	 * The error message to display.
 	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('not a URI');
+	 * 
+	 * if ($parse_uri->error) {
+	 *   // output:
+	 *   //   Input could not be parsed as a URI!
+	 *   //   not a URI
+	 *   echo $parse_uri->erro_msg.PHP_EOL;
+	 *   echo $parse_uri->input;
+	 * }</pre>
+	 * 
 	 * @var string
 	 */
 	public $error_msg;
@@ -159,6 +235,9 @@ class parse_uri {
 	 * Parses the input as a URI and populates the
 	 * variables. Fails if input is not a string or
 	 * if the string cannot be parsed as a URI.
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://example.com');</pre>
 	 * 
 	 * @param string $input The URI to parse.
 	 */
@@ -174,15 +253,16 @@ class parse_uri {
 			$t->error = TRUE;
 			$t->error_msg = 'Input was not a string!';
 			
-			$t->scheme    = FALSE;
-			$t->user      = FALSE;
-			$t->pass      = FALSE;
-			$t->host      = FALSE;
-			$t->port      = FALSE;
-			$t->authority = FALSE;
-			$t->path      = FALSE;
-			$t->query     = FALSE;
-			$t->fragment  = FALSE;
+			$t->scheme      = FALSE;
+			$t->scheme_name = FALSE;
+			$t->user        = FALSE;
+			$t->pass        = FALSE;
+			$t->host        = FALSE;
+			$t->port        = FALSE;
+			$t->authority   = FALSE;
+			$t->path        = FALSE;
+			$t->query       = FALSE;
+			$t->fragment    = FALSE;
 		} else {
 			$this->parse_uri($input);
 		}
@@ -202,21 +282,20 @@ class parse_uri {
 		$t = $this;
 		$parsed   = parse_url((string) $uri);
 		$defaults = array(
-			'scheme'    => '',
-			'user'      => '',
-			'pass'      => '',
-			'host'      => '',
-			'port'      => '',
-			'authority' => '',
-			'path'      => '',
-			'query'     => '',
-			'fragment'  => ''
+			'scheme'      => '',
+			'scheme_name' => '',
+			'user'        => '',
+			'pass'        => '',
+			'host'        => '',
+			'port'        => '',
+			'authority'   => '',
+			'path'        => '',
+			'query'       => '',
+			'fragment'    => ''
 		);
 		
+		// Generate Authority
 		$authority = '';
-		if (!empty($t->scheme)) {
-			$authority .= $t->scheme;
-		}
 		if (!empty($t->user)) {
 			$authority .= $t->user;
 			if (empty($t->pass)) {
@@ -238,15 +317,16 @@ class parse_uri {
 		
 		$values = $parsed + $defaults;
 		
-		$t->scheme    = $values['scheme'];
-		$t->user      = $values['user'];
-		$t->pass      = $values['pass'];
-		$t->host      = $values['host'];
-		$t->port      = $values['port'];
-		$t->authority = $values['authority'];
-		$t->path      = $values['path'];
-		$t->query     = $values['query'];
-		$t->fragment  = $values['fragment'];
+		$t->scheme      = $values['scheme'].'://';
+		$t->scheme_name = $values['scheme'];
+		$t->user        = $values['user'];
+		$t->pass        = $values['pass'];
+		$t->host        = $values['host'];
+		$t->port        = $values['port'];
+		$t->authority   = $values['authority'];
+		$t->path        = $values['path'];
+		$t->query       = $values['query'];
+		$t->fragment    = $values['fragment'];
 	}
 	
 	/**
@@ -257,6 +337,13 @@ class parse_uri {
 	 * Array Keys:
 	 *   scheme, user, pass, host, port,
 	 *   authority, path, query, fragment
+	 * <br>
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://example.com');
+	 * $uri_arr = $parse_uri->arr();
+	 * 
+	 * // output: http://
+	 * echo $uri_arr['scheme'];</pre>
 	 * 
 	 * @return array The URI as an array.
 	 */
@@ -279,6 +366,13 @@ class parse_uri {
 	
 	/**
 	 * Returns the current URI as a string.
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * $parse_uri->prepend('HOST', 'www.');
+	 * 
+	 * // output: http://www.google.com/foo
+	 * echo $parse_uri->str();</pre>
 	 * 
 	 * @return string The current URI.
 	 */
@@ -323,6 +417,13 @@ class parse_uri {
 	/**
 	 * Prints the current URI.
 	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * $parse_uri->append('PATH', '/bar');
+	 * 
+	 * // output: http://google.com/foo/bar
+	 * $parse_uri->p_str();</pre>
+	 * 
 	 * @return void
 	 */
 	public function p_str() {
@@ -338,6 +439,13 @@ class parse_uri {
 	 * 
 	 * Array Keys:
 	 *   dirname, basename, extension, filename
+	 * <br>
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * $path_info = $parse_uri->path_info();
+	 * 
+	 * // output: foo
+	 * echo $path_info['filename'];</pre>
 	 * 
 	 * @return array The $path's information
 	 */
@@ -352,6 +460,13 @@ class parse_uri {
 	 * Appends $str to $section. By default it tries to
 	 * autocorrect some errors. Setting $disable_safety
 	 * to TRUE or 1 temporarly removes this functionality.
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * $parse_uri->append('PATH', '/bar');
+	 * 
+	 * // output: http://google.com/foo/bar
+	 * $parse_uri->p_str();</pre>
 	 * 
 	 * @param  string  $section        The section to append to.
 	 * @param  string  $str            The string to append.
@@ -368,8 +483,10 @@ class parse_uri {
 		}
 		if ($disable_safety) {
 			$this->$section = $this->$section.$str;
-		} else {
+		} elseif($this->safety($section, $str)) {
 			$this->$section = $this->$section.$this->safety($section, $str);
+		} else {
+			return FALSE;
 		}
 		return $this->str();
 	}
@@ -378,6 +495,13 @@ class parse_uri {
 	 * Prepends $str to $section. By default it tries to
 	 * autocorrect some errors. Setting $disable_safety
 	 * to TRUE or 1 temporarly removes this functionality.
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * $parse_uri->prepend('HOST', 'www.');
+	 * 
+	 * // output: http://www.google.com/foo
+	 * $parse_uri->p_str();</pre>
 	 * 
 	 * @param  string  $section        The section to prepend to.
 	 * @param  string  $str            The string to prepend.
@@ -394,8 +518,10 @@ class parse_uri {
 		}
 		if ($disable_safety) {
 			$this->$section = $str.$this->$section;
-		} else {
+		} elseif($this->safety($section, $str)) {
 			$this->$section = $this->safety($section, $str).$this->$section;
+		} else {
+			return FALSE;
 		}
 		return $this->str();
 	}
@@ -405,6 +531,13 @@ class parse_uri {
 	 * to autocorrect some errors. Setting
 	 * $disable_safety to TRUE or 1 temporarly removes
 	 * this functionality.
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * $parse_uri->replace('SCHEME', 'https');
+	 * 
+	 * // output: https://google.com/foo
+	 * $parse_uri->p_str();</pre>
 	 * 
 	 * @param  string  $section        The section to replace.
 	 * @param  string  $str            The string to replace $section with.
@@ -421,8 +554,10 @@ class parse_uri {
 		}
 		if ($disable_safety) {
 			$this->$section = $str;
-		} else {
+		} elseif($this->safety($section, $str)) {
 			$this->$section = $this->safety($section, $str);
+		} else {
+			return FALSE;
 		}
 		return $this->str();
 	}
@@ -434,7 +569,7 @@ class parse_uri {
 	 * @todo   Make this work.
 	 * @param  string $type The type error correction to apply.
 	 * @param  string $str  The string to attempt to correct.
-	 * @return string       The resulting string.
+	 * @return mixed        The resulting string, or FALSE on failure.
 	 */
 	private function safety($type, $str) {
 		return $str;
@@ -442,6 +577,19 @@ class parse_uri {
 	
 	/**
 	 * Re-initializes the class with the original URI
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * $parse_uri->prepend('PATH', '/baz');
+	 * $parse_uri->replace('SCHEME', 'https');
+	 * 
+	 * // output: https://google.com/baz/foo
+	 * $parse_uri->p_str();
+	 * 
+	 * $parse_uri->reset();
+	 * 
+	 * // output: http://google.com/foo
+	 * $parse_uri->p_str();</pre>
 	 * 
 	 * @return void
 	 */
