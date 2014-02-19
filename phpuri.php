@@ -209,7 +209,16 @@ class parse_uri {
 	 * @return array The URI as an array.
 	 */
 	public function arr() {
-		
+		return array(
+			'scheme'   => $this->scheme,
+			'host'     => $this->host,
+			'port'     => $this->port,
+			'user'     => $this->user,
+			'pass'     => $this->pass,
+			'path'     => $this->path,
+			'query'    => $this->query,
+			'fragment' => $this->fragment
+		);
 	}
 	
 	/**
