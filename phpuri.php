@@ -13,9 +13,10 @@
  *   $my_uri->p_str();
  *   // output: http://google.com/bar/baz
  * 
- * @author Nicholas Jordon
+ * @author  Nicholas Jordon
  * @license http://opensource.org/licenses/MIT
  * @version 0.1.0
+ * @see     http://en.wikipedia.org/wiki/URI_scheme
  */
 
 /**
@@ -54,33 +55,6 @@ class parse_uri {
 	public $protocol = &$this->scheme;
 	
 	/**
-	 * The host of the URI. This is typically a FQDN.
-	 * 
-	 * Example: test123.example.com
-	 * Regex: ([a-z]([a-z0-9\-]+)?\.)+([a-z]+)$
-	 * 
-	 * @var string
-	 */
-	public $host;
-	/**
-	 * Alias of $host.
-	 * @var string
-	 */
-	public $fqdn = &$this->host;
-	/**
-	 * Alias of $host.
-	 * @var string
-	 */
-	public $authority = &$this->host;
-	
-	/**
-	 * The port of the URI as a string.
-	 * 
-	 * @var string
-	 */
-	public $port;
-	
-	/**
 	 * The username of the URI.
 	 * 
 	 * @var string
@@ -103,6 +77,35 @@ class parse_uri {
 	 * @var string
 	 */
 	public $password = &$this->pass;
+	
+	/**
+	 * The host of the URI. This is typically a FQDN.
+	 * 
+	 * Example: test123.example.com
+	 * Regex: ([a-z]([a-z0-9\-]+)?\.)+([a-z]+)$
+	 * 
+	 * @var string
+	 */
+	public $host;
+	/**
+	 * Alias of $host.
+	 * @var string
+	 */
+	public $fqdn = &$this->host;
+	
+	/**
+	 * The port of the URI as a string.
+	 * 
+	 * @var string
+	 */
+	public $port;
+	
+	/**
+	 * The authority string from the URI.
+	 * 
+	 * @var string
+	 */
+	public $authority;
 	
 	/**
 	 * The path of the URI.
@@ -157,7 +160,6 @@ class parse_uri {
 	 * variables. Fails if input is not a string or
 	 * if the string cannot be parsed as a URI.
 	 * 
-	 * @todo  replace parse_url()
 	 * @param string $input The URI to parse.
 	 */
 	public function __construct($input) {
@@ -167,34 +169,76 @@ class parse_uri {
 			$t->error = TRUE;
 			$t->error_msg = 'Input was not a string!';
 			
-			$t->scheme   = FALSE;
-			$t->host     = FALSE;
-			$t->port     = FALSE;
-			$t->user     = FALSE;
-			$t->pass     = FALSE;
-			$t->path     = FALSE;
-			$t->query    = FALSE;
-			$t->fragment = FALSE;
+			$t->scheme    = FALSE;
+			$t->user      = FALSE;
+			$t->pass      = FALSE;
+			$t->host      = FALSE;
+			$t->port      = FALSE;
+			$t->authority = FALSE;
+			$t->path      = FALSE;
+			$t->query     = FALSE;
+			$t->fragment  = FALSE;
 		} else {
-			$parsed   = parse_url($input);
-			$defaults = array(
-				'scheme' => '', 'host'     => '',
-				'port'   => '', 'user'     => '',
-				'pass'   => '', 'path'     => '',
-				'query'  => '', 'fragment' => ''
-			);
-			
-			$values = $parsed + $defaults;
-			
-			$t->scheme   = $values['scheme'];
-			$t->host     = $values['host'];
-			$t->port     = $values['port'];
-			$t->user     = $values['user'];
-			$t->pass     = $values['pass'];
-			$t->path     = $values['path'];
-			$t->query    = $values['query'];
-			$t->fragment = $values['fragment'];
+			$this->parse_uri($input);
 		}
+	}
+	
+	/**
+	 * Parses the supplied string as a URI.
+	 * 
+	 * @todo   Improve & extend parse_url()
+	 * @param  string $uri The string to be parsed.
+	 * @return void
+	 */
+	private function parse_uri($uri) {
+		$t = $this;
+		$parsed   = parse_url((string) $uri);
+		$defaults = array(
+			'scheme'    => '',
+			'user'      => '',
+			'pass'      => '',
+			'host'      => '',
+			'port'      => '',
+			'authority' => '',
+			'path'      => '',
+			'query'     => '',
+			'fragment'  => ''
+		);
+		
+		$authority = '';
+		if (!empty($t->scheme)) {
+			$authority .= $t->scheme;
+		}
+		if (!empty($t->user)) {
+			$authority .= $t->user;
+			if (empty($t->pass)) {
+				$authority .= '@';
+			} else {
+				$authority .= ':';
+			}
+		}
+		if (!empty($t->pass)) {
+			$authority .= $t->pass.'@';
+		}
+		if (!empty($t->host)) {
+			$authority .= $t->host;
+		}
+		if (!empty($t->port)) {
+			$authority .= ':'.$t->port;
+		}
+		$parsed['authority'] = $authority;
+		
+		$values = $parsed + $defaults;
+		
+		$t->scheme    = $values['scheme'];
+		$t->user      = $values['user'];
+		$t->pass      = $values['pass'];
+		$t->host      = $values['host'];
+		$t->port      = $values['port'];
+		$t->authority = $values['authority'];
+		$t->path      = $values['path'];
+		$t->query     = $values['query'];
+		$t->fragment  = $values['fragment'];
 	}
 	
 	/**
@@ -203,21 +247,22 @@ class parse_uri {
 	 * sets each key as an empty string by default.
 	 * 
 	 * Array Keys:
-	 *   scheme, host, port, user,
-	 *   pass, path, query, fragment
+	 *   scheme, user, pass, host, port,
+	 *   authority, path, query, fragment
 	 * 
 	 * @return array The URI as an array.
 	 */
 	public function arr() {
 		return array(
-			'scheme'   => $this->scheme,
-			'host'     => $this->host,
-			'port'     => $this->port,
-			'user'     => $this->user,
-			'pass'     => $this->pass,
-			'path'     => $this->path,
-			'query'    => $this->query,
-			'fragment' => $this->fragment
+			'scheme'    => $this->scheme,
+			'user'      => $this->user,
+			'pass'      => $this->pass,
+			'host'      => $this->host,
+			'port'      => $this->port,
+			'authority' => $this->authority,
+			'path'      => $this->path,
+			'query'     => $this->query,
+			'fragment'  => $this->fragment
 		);
 	}
 	
@@ -227,13 +272,38 @@ class parse_uri {
 	 * @return string The current URI.
 	 */
 	public function str() {
-		$ret = "";
-		if(!empty($this->scheme)) $ret .= "$this->scheme:";
-		if(!empty($this->authority)) $ret .= "//$this->authority";
-		$ret .= $this->normalize_path($this->path);
-		if(!empty($this->query)) $ret .= "?$this->query";
-		if(!empty($this->fragment)) $ret .= "#$this->fragment";
-		return $ret;
+		$t = $this;
+		$str = '';
+		if (!empty($t->scheme)) {
+			$str .= $t->scheme;
+		}
+		if (!empty($t->user)) {
+			$str .= $t->user;
+			if (empty($t->pass)) {
+				$str .= '@';
+			} else {
+				$str .= ':';
+			}
+		}
+		if (!empty($t->pass)) {
+			$str .= $t->pass.'@';
+		}
+		if (!empty($t->host)) {
+			$str .= $t->host;
+		}
+		if (!empty($t->port)) {
+			$str .= ':'.$t->port;
+		}
+		if (!empty($t->path)) {
+			$str .= $t->path;
+		}
+		if (!empty($t->query)) {
+			$str .= '?'.$t->query;
+		}
+		if (!empty($t->fragment)) {
+			$str .= '#'.$t->fragment;
+		}
+		return $str;
 	}
 	
 	/**
