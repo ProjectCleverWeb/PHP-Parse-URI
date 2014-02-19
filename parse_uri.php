@@ -52,7 +52,7 @@ class parse_uri {
 	 * Alias of $scheme.
 	 * @var string
 	 */
-	public $protocol = &$this->scheme;
+	public $protocol;
 	
 	/**
 	 * The username of the URI.
@@ -64,7 +64,7 @@ class parse_uri {
 	 * Alias of $user.
 	 * @var string
 	 */
-	public $username = &$this->user;
+	public $username;
 	
 	/**
 	 * The password of the URI.
@@ -76,7 +76,7 @@ class parse_uri {
 	 * Alias of $pass.
 	 * @var string
 	 */
-	public $password = &$this->pass;
+	public $password;
 	
 	/**
 	 * The host of the URI. This is typically a FQDN.
@@ -91,7 +91,7 @@ class parse_uri {
 	 * Alias of $host.
 	 * @var string
 	 */
-	public $fqdn = &$this->host;
+	public $fqdn;
 	
 	/**
 	 * The port of the URI as a string.
@@ -164,8 +164,12 @@ class parse_uri {
 	 */
 	public function __construct($input) {
 		$t = $this;
-		$t->input = $input;
-		$t->error = FALSE;
+		$t->input    = $input;
+		$t->error    = FALSE;
+		$t->protocol = &$this->scheme;
+		$t->username = &$this->user;
+		$t->password = &$this->pass;
+		$t->fqdn     = &$this->host;
 		if (!is_string($input)) {
 			$t->error = TRUE;
 			$t->error_msg = 'Input was not a string!';
