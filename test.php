@@ -1,4 +1,10 @@
 <?php
+/**
+ * WARNING
+ * 
+ * THIS SCRIPT DOES NOT CURRENTLY WORK
+ */
+
 
 require('../rel2abs.php');
 require('../url_to_absolute.php');
