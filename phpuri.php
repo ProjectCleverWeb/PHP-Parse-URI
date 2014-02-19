@@ -165,6 +165,7 @@ class parse_uri {
 	public function __construct($input) {
 		$t = $this;
 		$t->input = $input;
+		$t->error = FALSE;
 		if (!is_string($input)) {
 			$t->error = TRUE;
 			$t->error_msg = 'Input was not a string!';
@@ -357,29 +358,16 @@ class parse_uri {
 		if ($this->error) {
 			return FALSE;
 		}
-		$uri = new phpUri($relative);
-		switch(true){
-			case !empty($uri->scheme): break;
-			case !empty($uri->authority): break;
-			case empty($uri->path):
-				$uri->path = $this->path;
-				if(empty($uri->query)) $uri->query = $this->query;
-			case strpos($uri->path, '/') === 0: break;
-			default:
-				$base_path = $this->path;
-				if(strpos($base_path, '/') === false){
-					$base_path = '';
-				} else {
-					$base_path = preg_replace ('/\/[^\/]+$/' ,'/' , $base_path);
-				}
-				if(empty($base_path) && empty($this->authority)) $base_path = '/';
-				$uri->path = $base_path . $uri->path; 
+		$section = strtolower($section);
+		if (!isset($this->$section)) {
+			return FALSE;
 		}
-		if(empty($uri->scheme)){
-			$uri->scheme = $this->scheme;
-			if(empty($uri->authority)) $uri->authority = $this->authority;
+		if ($disable_safety) {
+			$this->$section = $this->$section.$str;
+		} else {
+			$this->$section = $this->$section.$this->safety($section, $str);
 		}
-		return $uri->to_str();
+		return $this->str();
 	}
 	
 	/**
@@ -396,6 +384,16 @@ class parse_uri {
 		if ($this->error) {
 			return FALSE;
 		}
+		$section = strtolower($section);
+		if (!isset($this->$section)) {
+			return FALSE;
+		}
+		if ($disable_safety) {
+			$this->$section = $str.$this->$section;
+		} else {
+			$this->$section = $this->safety($section, $str).$this->$section;
+		}
+		return $this->str();
 	}
 	
 	/**
@@ -413,6 +411,29 @@ class parse_uri {
 		if ($this->error) {
 			return FALSE;
 		}
+		$section = strtolower($section);
+		if (!isset($this->$section)) {
+			return FALSE;
+		}
+		if ($disable_safety) {
+			$this->$section = $str;
+		} else {
+			$this->$section = $this->safety($section, $str);
+		}
+		return $this->str();
+	}
+	
+	/**
+	 * Attempts to correct any errors in $str based on
+	 * what $type is.
+	 * 
+	 * @todo   Make this work.
+	 * @param  string $type The type error correction to apply.
+	 * @param  string $str  The string to attempt to correct.
+	 * @return string       The resulting string.
+	 */
+	private function safety($type, $str) {
+		return $str;
 	}
 	
 	/**
