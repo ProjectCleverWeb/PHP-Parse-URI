@@ -157,15 +157,44 @@ class parse_uri {
 	 * variables. Fails if input is not a string or
 	 * if the string cannot be parsed as a URI.
 	 * 
+	 * @todo  replace parse_url()
 	 * @param string $input The URI to parse.
 	 */
 	public function __construct($input) {
-		preg_match_all('/^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/', $string ,$m);
-		$this->scheme = $m[2][0];
-		$this->authority = $m[4][0];
-		$this->path = $m[5][0];
-		$this->query = $m[7][0];
-		$this->fragment = $m[9][0];
+		$t = $this;
+		$t->input = $input;
+		if (!is_string($input)) {
+			$t->error = TRUE;
+			$t->error_msg = 'Input was not a string!';
+			
+			$t->scheme   = FALSE;
+			$t->host     = FALSE;
+			$t->port     = FALSE;
+			$t->user     = FALSE;
+			$t->pass     = FALSE;
+			$t->path     = FALSE;
+			$t->query    = FALSE;
+			$t->fragment = FALSE;
+		} else {
+			$parsed   = parse_url($input);
+			$defaults = array(
+				'scheme' => '', 'host'     => '',
+				'port'   => '', 'user'     => '',
+				'pass'   => '', 'path'     => '',
+				'query'  => '', 'fragment' => ''
+			);
+			
+			$values = $parsed + $defaults;
+			
+			$t->scheme   = $values['scheme'];
+			$t->host     = $values['host'];
+			$t->port     = $values['port'];
+			$t->user     = $values['user'];
+			$t->pass     = $values['pass'];
+			$t->path     = $values['path'];
+			$t->query    = $values['query'];
+			$t->fragment = $values['fragment'];
+		}
 	}
 	
 	/**
