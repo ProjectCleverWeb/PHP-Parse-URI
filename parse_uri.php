@@ -294,6 +294,18 @@ class parse_uri {
 			'fragment'    => ''
 		);
 		
+		$values = $parsed + $defaults;
+		
+		$t->scheme      = $values['scheme'].'://';
+		$t->scheme_name = $values['scheme'];
+		$t->user        = $values['user'];
+		$t->pass        = $values['pass'];
+		$t->host        = $values['host'];
+		$t->port        = $values['port'];
+		$t->path        = $values['path'];
+		$t->query       = $values['query'];
+		$t->fragment    = $values['fragment'];
+		
 		// Generate Authority
 		$authority = '';
 		if (!empty($t->user)) {
@@ -313,20 +325,9 @@ class parse_uri {
 		if (!empty($t->port)) {
 			$authority .= ':'.$t->port;
 		}
-		$parsed['authority'] = $authority;
+		$t->authority = $authority;
 		
-		$values = $parsed + $defaults;
 		
-		$t->scheme      = $values['scheme'].'://';
-		$t->scheme_name = $values['scheme'];
-		$t->user        = $values['user'];
-		$t->pass        = $values['pass'];
-		$t->host        = $values['host'];
-		$t->port        = $values['port'];
-		$t->authority   = $values['authority'];
-		$t->path        = $values['path'];
-		$t->query       = $values['query'];
-		$t->fragment    = $values['fragment'];
 	}
 	
 	/**
