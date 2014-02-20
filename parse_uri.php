@@ -575,7 +575,7 @@ class parse_uri {
 		$type = strtoupper((string) $type);
 		$str = trim($str);
 		$err = 0;
-		switch () {
+		switch ($type) {
 			case 'SCHEME_NAME':
 				if (strpos('//', $str) === FALSE) {
 					$str = $str.'://';
