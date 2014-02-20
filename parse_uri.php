@@ -572,6 +572,95 @@ class parse_uri {
 	 * @return mixed        The resulting string, or FALSE on failure.
 	 */
 	private function safety($type, $str) {
+		$type = strtoupper((string) $type);
+		$str = trim($str);
+		$err = 0;
+		switch () {
+			case 'SCHEME_NAME':
+				if (strpos('//', $str) === FALSE) {
+					$str = $str.'://';
+				}
+				
+			case 'SCHEME':
+				$str = strtolower((string) $str);
+				if (!stripos($str, '://') === FALSE) { // <scheme>://
+					if (!preg_match('/\A[a-z]{1,5}:\/\/(\/)?\Z/', $str)) {
+						$err++;
+					}
+				} elseif(stripos($str, '//') === FALSE) { // inherit
+					if ($str != '//') {
+						$err++;
+					}
+				} else { // no scheme
+					if (!empty($str)) {
+						$err++;
+					}
+				}
+				break;
+				
+			case 'USER':
+				if (!preg_match('/\A[a-z0-9\-_]*\Z/i', $str)) {
+					$err++;
+				}
+				break;
+			
+			case 'PASS':
+				if (!preg_match('/\A[a-z0-9\-_]*\Z/i', $str)) {
+					$err++;
+				}
+				break;
+			
+			case 'HOST':
+				$str = strtolower((string) $str);
+				if (
+					!preg_match('/\A(([a-z0-9_]([a-z0-9\-_]+)?)\.)+[a-z0-9]([a-z0-9\-]+)?\Z/', $str) // fqdn
+					&&
+					!preg_match('/\A([0-9]\.){3}[0-9]\Z/', $str) // ip
+				) {
+					$err++;
+				}
+				break;
+			
+			case 'PORT':
+				if (!preg_match('/\A[0-9]{0,6}\Z/', $str)) {
+					$err++;
+				}
+				break;
+			
+			case 'PATH':
+				if ($str[0] != '/') {
+					$str = '\\'.$str;
+				}
+				$str = str_replace(array('\\\\', '/'), array('', '/'), $str);
+				if (!preg_match('/\A(\/[a-z0-9\-_\.])+(\/)?\Z/i', $str)) {
+					$err++;
+				}
+				break;
+			
+			case 'QUERY':
+				// most characters are valid,
+				break;
+			
+			case 'FRAGMENT':
+				if ($str[0] == '#') {
+					unset($str[0]);
+				}
+				if (!preg_match('/\A[a-z0-9\-]*\Z/i', $str)) {
+					$err++;
+				}
+				break;
+			
+			
+			
+			default:
+				return FALSE;
+				break;
+		}
+		
+		if ($err) {
+			return FALSE;
+		}
+		
 		return $str;
 	}
 	
