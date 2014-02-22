@@ -13,10 +13,11 @@
  *   $my_uri->p_str();
  *   // output: http://google.com/bar/baz
  * 
- * @author  Nicholas Jordon
- * @license http://opensource.org/licenses/MIT
- * @version 0.1.0
- * @see     http://en.wikipedia.org/wiki/URI_scheme
+ * @author    Nicholas Jordon
+ * @copyright 2014 Nicholas Jordon - All Rights Reserved
+ * @license   http://opensource.org/licenses/MIT
+ * @version   0.1.0
+ * @see       http://en.wikipedia.org/wiki/URI_scheme
  */
  
 /**
@@ -484,10 +485,13 @@ class parse_uri {
 		}
 		if ($disable_safety) {
 			$this->$section = $this->$section.$str;
-		} elseif($this->safety($section, $str)) {
-			$this->$section = $this->$section.$this->safety($section, $str);
 		} else {
-			return FALSE;
+			$safety = $this->safety($section, $str)
+			if($safety != FALSE) {
+				$this->$section = $this->$section.$safety;
+			} else {
+				return FALSE;
+			}
 		}
 		return $this->str();
 	}
@@ -519,10 +523,13 @@ class parse_uri {
 		}
 		if ($disable_safety) {
 			$this->$section = $str.$this->$section;
-		} elseif($this->safety($section, $str)) {
-			$this->$section = $this->safety($section, $str).$this->$section;
 		} else {
-			return FALSE;
+			$safety = $this->safety($section, $str)
+			if($safety != FALSE) {
+				$this->$section = $safety.$this->$section;
+			} else {
+				return FALSE;
+			}
 		}
 		return $this->str();
 	}
@@ -555,10 +562,13 @@ class parse_uri {
 		}
 		if ($disable_safety) {
 			$this->$section = $str;
-		} elseif($this->safety($section, $str)) {
-			$this->$section = $this->safety($section, $str);
 		} else {
-			return FALSE;
+			$safety = $this->safety($section, $str);
+			if($safety != FALSE) {
+				$this->$section = $safety;
+			} else {
+				return FALSE;
+			}
 		}
 		return $this->str();
 	}
@@ -572,83 +582,99 @@ class parse_uri {
 	 * @param  string $str  The string to attempt to correct.
 	 * @return mixed        The resulting string, or FALSE on failure.
 	 */
-	private function safety($type, $str) {
+	protected function safety($type, $str) {
 		$type = strtoupper((string) $type);
-		$str = trim($str);
+		$str = trim((string) $str);
 		$err = 0;
 		switch ($type) {
 			case 'SCHEME_NAME':
-				if (strpos('//', $str) === FALSE) {
-					$str = $str.'://';
+			case 'SCHEME':
+				if (strpos($str, '\\') !== FALSE) {
+					$str = str_replace('\\', '/', $str);
+				}
+				if (strpos($str, '//') === FALSE && stripos($str, ':') === FALSE) {
+					if (!empty($str)) {
+						$str = $str.'://'; // assume it is generic
+					} else {
+						break; // there is nothing to check
+					}
 				}
 				
-			case 'SCHEME':
-				$str = strtolower((string) $str);
-				if (!stripos($str, '://') === FALSE) { // <scheme>://
+				$str = strtolower($str);
+				if (!stripos($str, '://') === FALSE) { // explicit generic
 					if (!preg_match('/\A[a-z]{1,5}:\/\/(\/)?\Z/', $str)) {
+						$err++;
+					}
+				} elseif(stripos($str, ':') === FALSE) { // explicit pipe
+					if (!preg_match('/\A[a-z]{1,10}:\Z/', $str)) {
 						$err++;
 					}
 				} elseif(stripos($str, '//') === FALSE) { // inherit
 					if ($str != '//') {
 						$err++;
 					}
-				} else { // no scheme
-					if (!empty($str)) {
-						$err++;
-					}
 				}
 				break;
 				
 			case 'USER':
-				if (!preg_match('/\A[a-z0-9\-_]*\Z/i', $str)) {
-					$err++;
-				}
+				$str = urlencode($str);
 				break;
 			
 			case 'PASS':
-				if (!preg_match('/\A[a-z0-9\-_]*\Z/i', $str)) {
-					$err++;
-				}
+				$str = urlencode($str);
 				break;
 			
 			case 'HOST':
-				$str = strtolower((string) $str);
+				$str = strtolower($str);
 				if (
-					!preg_match('/\A(([a-z0-9_]([a-z0-9\-_]+)?)\.)+[a-z0-9]([a-z0-9\-]+)?\Z/', $str) // fqdn
-					&&
-					!preg_match('/\A([0-9]\.){3}[0-9]\Z/', $str) // ip
+					(
+						!preg_match('/\A(([a-z0-9_]([a-z0-9\-_]+)?)\.)+[a-z0-9]([a-z0-9\-]+)?\Z/', $str) // fqdn
+						&&
+						!preg_match('/\A([0-9]\.){3}[0-9]\Z/', $str) // ip
+					)
+					||
+					strlen($str) > 255
 				) {
 					$err++;
 				}
 				break;
 			
 			case 'PORT':
-				if (!preg_match('/\A[0-9]{0,6}\Z/', $str)) {
+				if ($str[0] == ':') {
+					$str = substr($str, 1);
+				}
+				if (!preg_match('/\A[0-9]{0,5}\Z/', $str)) {
 					$err++;
 				}
 				break;
 			
 			case 'PATH':
-				if ($str[0] != '/') {
-					$str = '\\'.$str;
+				$str = str_replace(array('//', '\\'), '/', $str); // common mistakes
+				$path_arr = explode('/', $str);
+				$safe_arr = array();
+				foreach ($path_arr as $path_part) {
+					$safe_arr[] = rawurlencode($path_part);
 				}
-				$str = str_replace(array('\\\\', '/'), array('', '/'), $str);
-				if (!preg_match('/\A(\/[a-z0-9\-_\.])+(\/)?\Z/i', $str)) {
-					$err++;
-				}
+				$str = implode('/', $safe_arr);
 				break;
 			
 			case 'QUERY':
-				// most characters are valid,
+				if ($str[0] == '?') {
+					$str = substr($str, 1);
+				}
+				$frag_loc = strpos($str, '#')
+				if ($frag_loc) {
+					$str = substr($str, 0, ($frag_loc - 1));
+				} elseif ($str[0] == '#') {
+					$str = '';
+				}
 				break;
 			
 			case 'FRAGMENT':
 				if ($str[0] == '#') {
 					unset($str[0]);
 				}
-				if (!preg_match('/\A[a-z0-9\-]*\Z/i', $str)) {
-					$err++;
-				}
+				$str = urlencode($str);
 				break;
 			
 			
