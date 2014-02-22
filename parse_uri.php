@@ -485,10 +485,13 @@ class parse_uri {
 		}
 		if ($disable_safety) {
 			$this->$section = $this->$section.$str;
-		} elseif($this->safety($section, $str)) {
-			$this->$section = $this->$section.$this->safety($section, $str);
 		} else {
-			return FALSE;
+			$safety = $this->safety($section, $str)
+			if($safety != FALSE) {
+				$this->$section = $this->$section.$safety;
+			} else {
+				return FALSE;
+			}
 		}
 		return $this->str();
 	}
@@ -520,10 +523,13 @@ class parse_uri {
 		}
 		if ($disable_safety) {
 			$this->$section = $str.$this->$section;
-		} elseif($this->safety($section, $str)) {
-			$this->$section = $this->safety($section, $str).$this->$section;
 		} else {
-			return FALSE;
+			$safety = $this->safety($section, $str)
+			if($safety != FALSE) {
+				$this->$section = $safety.$this->$section;
+			} else {
+				return FALSE;
+			}
 		}
 		return $this->str();
 	}
@@ -556,10 +562,13 @@ class parse_uri {
 		}
 		if ($disable_safety) {
 			$this->$section = $str;
-		} elseif($this->safety($section, $str)) {
-			$this->$section = $this->safety($section, $str);
 		} else {
-			return FALSE;
+			$safety = $this->safety($section, $str);
+			if($safety != FALSE) {
+				$this->$section = $safety;
+			} else {
+				return FALSE;
+			}
 		}
 		return $this->str();
 	}
@@ -575,7 +584,7 @@ class parse_uri {
 	 */
 	protected function safety($type, $str) {
 		$type = strtoupper((string) $type);
-		$str = trim($str);
+		$str = trim((string) $str);
 		$err = 0;
 		switch ($type) {
 			case 'SCHEME_NAME':
@@ -591,7 +600,7 @@ class parse_uri {
 					}
 				}
 				
-				$str = strtolower((string) $str);
+				$str = strtolower($str);
 				if (!stripos($str, '://') === FALSE) { // explicit generic
 					if (!preg_match('/\A[a-z]{1,5}:\/\/(\/)?\Z/', $str)) {
 						$err++;
@@ -616,17 +625,24 @@ class parse_uri {
 				break;
 			
 			case 'HOST':
-				$str = strtolower((string) $str);
+				$str = strtolower($str);
 				if (
-					!preg_match('/\A(([a-z0-9_]([a-z0-9\-_]+)?)\.)+[a-z0-9]([a-z0-9\-]+)?\Z/', $str) // fqdn
-					&&
-					!preg_match('/\A([0-9]\.){3}[0-9]\Z/', $str) // ip
+					(
+						!preg_match('/\A(([a-z0-9_]([a-z0-9\-_]+)?)\.)+[a-z0-9]([a-z0-9\-]+)?\Z/', $str) // fqdn
+						&&
+						!preg_match('/\A([0-9]\.){3}[0-9]\Z/', $str) // ip
+					)
+					||
+					strlen($str) > 255
 				) {
 					$err++;
 				}
 				break;
 			
 			case 'PORT':
+				if ($str[0] == ':') {
+					$str = substr($str, 1);
+				}
 				if (!preg_match('/\A[0-9]{0,5}\Z/', $str)) {
 					$err++;
 				}
@@ -643,16 +659,22 @@ class parse_uri {
 				break;
 			
 			case 'QUERY':
-				// most characters are valid,
+				if ($str[0] == '?') {
+					$str = substr($str, 1);
+				}
+				$frag_loc = strpos($str, '#')
+				if ($frag_loc) {
+					$str = substr($str, 0, ($frag_loc - 1));
+				} elseif ($str[0] == '#') {
+					$str = '';
+				}
 				break;
 			
 			case 'FRAGMENT':
 				if ($str[0] == '#') {
 					unset($str[0]);
 				}
-				if (!preg_match('/\A[a-z0-9\-]*\Z/i', $str)) {
-					$err++;
-				}
+				$str = urlencode($str);
 				break;
 			
 			
