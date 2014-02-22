@@ -455,7 +455,32 @@ class parse_uri {
 		if ($this->error) {
 			return FALSE;
 		}
-		return pathinfo($this->path);
+		$info = pathinfo($this->path);
+		$info['array'] = explode('/',$this->path);
+		return $info;
+	}
+	
+	/**
+	 * Returns an associative array of various
+	 * information about the $path.
+	 * 
+	 * Array Keys:
+	 *   dirname, basename, extension, filename
+	 * <br>
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * $path_info = $parse_uri->path_info();
+	 * 
+	 * // output: foo
+	 * echo $path_info['filename'];</pre>
+	 * 
+	 * @return array The $path's information
+	 */
+	public function query_arr() {
+		if ($this->error) {
+			return FALSE;
+		}
+		$info = parse_str($this->query);
 	}
 	
 	/**
