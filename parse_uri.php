@@ -519,8 +519,8 @@ class parse_uri {
 		if ($disable_safety) {
 			$this->$section = $this->$section.$str;
 		} else {
-			$safety = $this->safety($section, $str)
-			if($safety != FALSE) {
+			$safety = $this->safety($section, $str);
+			if ($safety != FALSE) {
 				$this->$section = $this->$section.$safety;
 			} else {
 				return FALSE;
@@ -557,8 +557,8 @@ class parse_uri {
 		if ($disable_safety) {
 			$this->$section = $str.$this->$section;
 		} else {
-			$safety = $this->safety($section, $str)
-			if($safety != FALSE) {
+			$safety = $this->safety($section, $str);
+			if ($safety != FALSE) {
 				$this->$section = $safety.$this->$section;
 			} else {
 				return FALSE;
@@ -597,7 +597,7 @@ class parse_uri {
 			$this->$section = $str;
 		} else {
 			$safety = $this->safety($section, $str);
-			if($safety != FALSE) {
+			if ($safety != FALSE) {
 				$this->$section = $safety;
 			} else {
 				return FALSE;
@@ -695,7 +695,7 @@ class parse_uri {
 				if ($str[0] == '?') {
 					$str = substr($str, 1);
 				}
-				$frag_loc = strpos($str, '#')
+				$frag_loc = strpos($str, '#');
 				if ($frag_loc) {
 					$str = substr($str, 0, ($frag_loc - 1));
 				} elseif ($str[0] == '#') {
