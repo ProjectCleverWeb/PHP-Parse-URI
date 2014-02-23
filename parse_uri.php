@@ -273,16 +273,20 @@ class parse_uri {
 	 * Parses the supplied string as a URI and sets the
 	 * variables in the class.
 	 * 
-	 * @todo   Improve & extend parse_url()
 	 * @param  string $uri The string to be parsed.
 	 * @return void
 	 */
-	private function parse($uri) {
+	protected function parse($uri) {
 		if ($this->error) {
 			return FALSE;
 		}
 		$t = $this;
-		$parsed   = parse_url((string) $uri);
+		$parsed = $t->_parse((string) $uri);
+		if (empty($parsed)) {
+			$t->error = TRUE;
+			$t->error = 'Could not parse the input as a URI';
+			return $parsed;
+		}
 		$defaults = array(
 			'scheme'      => '',
 			'scheme_name' => '',
@@ -308,8 +312,38 @@ class parse_uri {
 		$t->query       = $values['query'];
 		$t->fragment    = $values['fragment'];
 		
-		// Generate Authority
+		$t->gen_authority();
+	}
+	
+	/**
+	 * Helper function for parse(); allows for complete
+	 * PHP 5.3.7 compatibility.
+	 * 
+	 * @param  string $uri The string to be parsed
+	 * @return array       The correctly parsed string as an array
+	 */
+	private function _parse($uri) {
+		$uri = (string) $uri;
+		if (!version_compare(PHP_VERSION, '5.4.7') >= 0) {
+			if ($uri[0] == '/') {
+				unset($uri[0]);
+			}
+			if ($uri[0] == '/') {
+				unset($uri[0]);
+			}
+		}
+		return parse_url((string) $uri);
+	}
+	
+	/**
+	 * Standard function to re-genrate $authority
+	 * 
+	 * @return void
+	 */
+	private function gen_authority() {
+		$t = $this;
 		$authority = '';
+		
 		if (!empty($t->user)) {
 			$authority .= $t->user;
 			if (empty($t->pass)) {
@@ -328,8 +362,6 @@ class parse_uri {
 			$authority .= ':'.$t->port;
 		}
 		$t->authority = $authority;
-		
-		
 	}
 	
 	/**
@@ -394,10 +426,8 @@ class parse_uri {
 				$str .= '@';
 			} else {
 				$str .= ':';
+				$str .= $t->pass.'@';
 			}
-		}
-		if (!empty($t->pass)) {
-			$str .= $t->pass.'@';
 		}
 		if (!empty($t->host)) {
 			$str .= $t->host;
@@ -610,7 +640,6 @@ class parse_uri {
 	 * Attempts to correct any errors in $str based on
 	 * what $type is.
 	 * 
-	 * @todo   Make this work.
 	 * @param  string $type The type error correction to apply.
 	 * @param  string $str  The string to attempt to correct.
 	 * @return mixed        The resulting string, or FALSE on failure.
