@@ -7,7 +7,7 @@
  * Based on P Guardiario's original work
  * 
  * Example:
- *   $my_uri = new parse_uri('http://google.com/foo');
+ *   $my_uri = new uri('http://google.com/foo');
  *   $my_uri->replace('PATH', '/bar');
  *   $my_uri->append('PATH', '/baz');
  *   $my_uri->p_str();
@@ -21,12 +21,12 @@
  */
  
 /**
- * Parse URI
+ * PHP URI
  * 
  * Parses the input as a URI string. On failure $error
  * is set to 1 and $error_msg is populated.
  */
-class parse_uri {
+class uri {
 	
 	/*** Variables ***/
 	
@@ -34,7 +34,7 @@ class parse_uri {
 	 * The original input to the class constructor.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://example.com');
+	 * <pre>$parse_uri = new uri('http://example.com');
 	 * 
 	 * // output: http://example.com
 	 * echo $parse_uri->input;
@@ -52,7 +52,7 @@ class parse_uri {
 	 * inherted schemes.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('https://example.com');
+	 * <pre>$parse_uri = new uri('https://example.com');
 	 * 
 	 * // output: https://
 	 * echo $parse_uri->scheme;</pre>
@@ -72,7 +72,7 @@ class parse_uri {
 	 * alpha characters or an emtpy string.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('https://example.com');
+	 * <pre>$parse_uri = new uri('https://example.com');
 	 * 
 	 * // output: https
 	 * echo $parse_uri->scheme_name;</pre>
@@ -86,7 +86,7 @@ class parse_uri {
 	 * The username of the URI.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('ftp://jdoe:test123@example.com');
+	 * <pre>$parse_uri = new uri('ftp://jdoe:test123@example.com');
 	 * 
 	 * // output: jdoe
 	 * echo $parse_uri->user;</pre>
@@ -104,7 +104,7 @@ class parse_uri {
 	 * The password of the URI.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('ftp://jdoe:test123@example.com');
+	 * <pre>$parse_uri = new uri('ftp://jdoe:test123@example.com');
 	 * 
 	 * // output: test123
 	 * echo $parse_uri->pass;</pre>
@@ -122,7 +122,7 @@ class parse_uri {
 	 * The host of the URI. This is typically a FQDN.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('//test.example.com');
+	 * <pre>$parse_uri = new uri('//test.example.com');
 	 * 
 	 * // output: test.example.com
 	 * echo $parse_uri->host;</pre>
@@ -141,7 +141,7 @@ class parse_uri {
 	 * The port of the URI as a string.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('ssh://jdoe@example.com:700');
+	 * <pre>$parse_uri = new uri('ssh://jdoe@example.com:700');
 	 * 
 	 * // output: 700
 	 * echo $parse_uri->port;</pre>
@@ -154,7 +154,7 @@ class parse_uri {
 	 * The authority string from the URI.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://jdoe:test123@example.com:700/path/to/file.ext?q=1#frag');
+	 * <pre>$parse_uri = new uri('http://jdoe:test123@example.com:700/path/to/file.ext?q=1#frag');
 	 * 
 	 * // output: jdoe:test123@example.com:700
 	 * echo $parse_uri->authority;</pre>
@@ -167,7 +167,7 @@ class parse_uri {
 	 * The path of the URI.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://example.com:700/path/to/file.ext?q=1#frag');
+	 * <pre>$parse_uri = new uri('http://example.com:700/path/to/file.ext?q=1#frag');
 	 * 
 	 * // output: /path/to/file.ext
 	 * echo $parse_uri->path</pre>
@@ -180,7 +180,7 @@ class parse_uri {
 	 * The query string of the URI.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('example.com:700/path/to/file.ext?q=1#frag');
+	 * <pre>$parse_uri = new uri('example.com:700/path/to/file.ext?q=1#frag');
 	 * 
 	 * // output: q=1
 	 * echo $parse_uri->query</pre>
@@ -193,7 +193,7 @@ class parse_uri {
 	 * The fragment of the URI.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('example.com:700/path/to/file.ext?q=1#frag');
+	 * <pre>$parse_uri = new uri('example.com:700/path/to/file.ext?q=1#frag');
 	 * 
 	 * // output: frag
 	 * echo $parse_uri->fragment</pre>
@@ -214,7 +214,7 @@ class parse_uri {
 	 * The error message to display.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('not a URI');
+	 * <pre>$parse_uri = new uri('not a URI');
 	 * 
 	 * if ($parse_uri->error) {
 	 *   // output:
@@ -238,7 +238,7 @@ class parse_uri {
 	 * if the string cannot be parsed as a URI.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://example.com');</pre>
+	 * <pre>$parse_uri = new uri('http://example.com');</pre>
 	 * 
 	 * @param string $input The URI to parse.
 	 */
@@ -374,7 +374,7 @@ class parse_uri {
 	 *   authority, path, query, fragment
 	 * <br>
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://example.com');
+	 * <pre>$parse_uri = new uri('http://example.com');
 	 * $uri_arr = $parse_uri->arr();
 	 * 
 	 * // output: http://
@@ -403,7 +403,7 @@ class parse_uri {
 	 * Returns the current URI as a string.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * <pre>$parse_uri = new uri('http://google.com/foo');
 	 * $parse_uri->prepend('HOST', 'www.');
 	 * 
 	 * // output: http://www.google.com/foo
@@ -451,7 +451,7 @@ class parse_uri {
 	 * Prints the current URI.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * <pre>$parse_uri = new uri('http://google.com/foo');
 	 * $parse_uri->append('PATH', '/bar');
 	 * 
 	 * // output: http://google.com/foo/bar
@@ -474,7 +474,7 @@ class parse_uri {
 	 *   dirname, basename, extension, filename, array
 	 * <br>
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * <pre>$parse_uri = new uri('http://google.com/foo');
 	 * $path_info = $parse_uri->path_info();
 	 * 
 	 * // output: foo
@@ -506,7 +506,7 @@ class parse_uri {
 	 * Returns the query string parsed into an array
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://google.com?s=help');
+	 * <pre>$parse_uri = new uri('http://google.com?s=help');
 	 * $query_arr = $parse_uri->query_arr();
 	 * 
 	 * // output: help
@@ -527,7 +527,7 @@ class parse_uri {
 	 * to TRUE or 1 temporarly removes this functionality.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * <pre>$parse_uri = new uri('http://google.com/foo');
 	 * $parse_uri->append('PATH', '/bar');
 	 * 
 	 * // output: http://google.com/foo/bar
@@ -565,7 +565,7 @@ class parse_uri {
 	 * to TRUE or 1 temporarly removes this functionality.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * <pre>$parse_uri = new uri('http://google.com/foo');
 	 * $parse_uri->prepend('HOST', 'www.');
 	 * 
 	 * // output: http://www.google.com/foo
@@ -604,7 +604,7 @@ class parse_uri {
 	 * this functionality.
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * <pre>$parse_uri = new uri('http://google.com/foo');
 	 * $parse_uri->replace('SCHEME', 'https');
 	 * 
 	 * // output: https://google.com/foo
@@ -757,7 +757,7 @@ class parse_uri {
 	 * Re-initializes the class with the original URI
 	 * 
 	 * Example:
-	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
+	 * <pre>$parse_uri = new uri('http://google.com/foo');
 	 * $parse_uri->prepend('PATH', '/baz');
 	 * $parse_uri->replace('SCHEME', 'https');
 	 * 

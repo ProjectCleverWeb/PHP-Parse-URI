@@ -1,4 +1,4 @@
-#PHP Parse URI
+#PHP URI
 
 PHP library for working with URI's. Requires PHP `5.3.7` or later. Replaces and extends PHP's `parse_url()`.
 
@@ -11,11 +11,11 @@ Licensed under the MIT license
 
 ##Usage
 
-####Example #1: <small>String Operations</small>
+####Example #1: String Operations
 
 ```php
 <?php
-$uri = new parse_uri('http://example.com/path/to/file.ext');
+$uri = new uri('http://example.com/path/to/file.ext');
 
 $uri->replace('QUERY', array('rand', (string) rand(1, 10)));
 $uri->replace('PATH', '/foo/bar');
@@ -31,6 +31,8 @@ $secure = $uri->replace('SCHEME', 'https');
 echo $new.PHP_EOL;
 echo $original.PHP_EOL;
 echo $secure.PHP_EOL;
+
+?>
 ```
 
 **Output:**
@@ -41,11 +43,11 @@ https://example.com/path/to/file.ext#Checkout
 ```
 
 
-####Example #2: <small>Information Gathering</small>
+####Example #2: Information Gathering
 
 ```php
 <?php
-$uri = new parse_uri('http://example.com/path/to/file.ext?q=1');
+$uri = new uri('http://example.com/path/to/file.ext?q=1');
 
 if ($uri->scheme_name == 'https') {
 	echo 'Uses SSL';
@@ -55,7 +57,7 @@ if ($uri->scheme_name == 'https') {
 
 $link = sprintf('<a href="%1$s">%2$s</a>', $uri->str(), $uri->host.$uri->path);
 
-$uri = new parse_uri('ftp://jdoe@example.com/my/home/dir');
+$uri = new uri('ftp://jdoe@example.com/my/home/dir');
 $login = array(
 	'username' => $uri->user,
 	'password' => $user_input,
@@ -63,6 +65,7 @@ $login = array(
 	'path'     => $uri->path
 );
 
+?>
 ```
 
 **Output:**

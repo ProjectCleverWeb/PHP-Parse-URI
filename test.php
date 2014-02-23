@@ -3,12 +3,21 @@
  * Evaluate the script functions as expected
  */
 
-require __DIR__.'./parse_uri.php';
+require __DIR__.'./uri.lib.php';
 
-$uri1 = new parse_uri('http://jdoe:test123@example.com:700/path/to/file.ext?q=1#frag');
-$uri2 = new parse_uri('//google.com');
-$uri3 = new parse_uri('example.com/foo');
+$uri1 = new uri('http://jdoe:test123@example.com:700/path/to/file.ext?q=1#frag');
+$uri2 = new uri('google.com');
 
-print_r($uri2);
+$prints = array();
+
+$prints['full-vars'] = $uri1;
+$prints['basic-vars'] = $uri1;
+
+
+
+
+
+
+print_r($prints);
 
 ?>
