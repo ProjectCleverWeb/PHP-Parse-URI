@@ -556,6 +556,7 @@ class uri {
 				return FALSE;
 			}
 		}
+		$t->gen_authority();
 		return $this->str();
 	}
 	
@@ -594,6 +595,7 @@ class uri {
 				return FALSE;
 			}
 		}
+		$t->gen_authority();
 		return $this->str();
 	}
 	
@@ -633,6 +635,7 @@ class uri {
 				return FALSE;
 			}
 		}
+		$t->gen_authority();
 		return $this->str();
 	}
 	
