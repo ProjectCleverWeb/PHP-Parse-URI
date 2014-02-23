@@ -265,18 +265,19 @@ class parse_uri {
 			$t->query       = FALSE;
 			$t->fragment    = FALSE;
 		} else {
-			$this->parse_uri($input);
+			$this->parse($input);
 		}
 	}
 	
 	/**
-	 * Parses the supplied string as a URI.
+	 * Parses the supplied string as a URI and sets the
+	 * variables in the class.
 	 * 
 	 * @todo   Improve & extend parse_url()
 	 * @param  string $uri The string to be parsed.
 	 * @return void
 	 */
-	private function parse_uri($uri) {
+	private function parse($uri) {
 		if ($this->error) {
 			return FALSE;
 		}
@@ -440,7 +441,7 @@ class parse_uri {
 	 * information about the $path.
 	 * 
 	 * Array Keys:
-	 *   dirname, basename, extension, filename
+	 *   dirname, basename, extension, filename, array
 	 * <br>
 	 * Example:
 	 * <pre>$parse_uri = new parse_uri('http://google.com/foo');
@@ -455,7 +456,39 @@ class parse_uri {
 		if ($this->error) {
 			return FALSE;
 		}
-		return pathinfo($this->path);
+		$info = pathinfo($this->path);
+		
+		$arr = explode('/',$this->path);
+		$last = count($arr) - 1;
+			
+		if ($arr[$last] == '') {
+			unset($arr[$last]);
+		}
+		if ($arr[0] == '') {
+			array_shift($arr);
+		}
+		$info['array'] = $arr;
+		
+		return $info;
+	}
+	
+	/**
+	 * Returns the query string parsed into an array
+	 * 
+	 * Example:
+	 * <pre>$parse_uri = new parse_uri('http://google.com?s=help');
+	 * $query_arr = $parse_uri->query_arr();
+	 * 
+	 * // output: help
+	 * echo $query_arr['s'];</pre>
+	 * 
+	 * @return array $query as an array
+	 */
+	public function query_arr() {
+		if ($this->error) {
+			return FALSE;
+		}
+		$info = parse_str($this->query);
 	}
 	
 	/**
