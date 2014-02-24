@@ -9,15 +9,25 @@ $uri1 = new uri('http://jdoe:test123@example.com:700/path/to/file.ext?q=1#frag')
 $uri2 = new uri('google.com');
 
 $prints = array();
-
-$prints['full-vars'] = $uri1;
-$prints['basic-vars'] = $uri1;
-
+$full   = &$prints['full'];
+$basic  = &$prints['basic'];
 
 
+$full['vars'] = $uri1;
+$basic['vars'] = $uri2;
 
+$full['arr()'] = $uri1->arr();
+$basic['arr()'] = $uri2->arr();
 
+$full['str()'] = $uri1->str();
+$basic['str()'] = $uri2->str();
 
-print_r($prints);
+$full['path_info()'] = $uri1->path_info();
+$basic['path_info()'] = $uri2->path_info();
+
+$full['query_arr()'] = $uri1->query_arr();
+$basic['query_arr()'] = $uri2->query_arr();
+
+var_dump($prints);
 
 ?>

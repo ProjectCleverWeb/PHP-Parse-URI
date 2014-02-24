@@ -91,7 +91,11 @@ class uri {
 		
 		$values = $parsed + $defaults;
 		
-		$t->scheme      = $values['scheme'].'://';
+		if (!empty($values['scheme'])) {
+			$t->scheme = $values['scheme'].'://';
+		} else {
+			$t->scheme = '';
+		}
 		$t->scheme_name = $values['scheme'];
 		$t->user        = $values['user'];
 		$t->pass        = $values['pass'];
@@ -225,7 +229,8 @@ class uri {
 		if ($this->error) {
 			return FALSE;
 		}
-		$info = parse_str($this->query);
+		parse_str($this->query, $return);
+		return $return;
 	}
 	
 	public function append($section, $str, $disable_safety = FALSE) {
@@ -300,6 +305,11 @@ class uri {
 		$err = 0;
 		switch ($type) {
 			case 'SCHEME_NAME':
+				if (!preg_match('/\A[a-z]{1,10}\Z/', $str)) {
+					$err++;
+				}
+				break;
+			
 			case 'SCHEME':
 				if (strpos($str, '\\') !== FALSE) {
 					$str = str_replace('\\', '/', $str);
@@ -314,7 +324,7 @@ class uri {
 				
 				$str = strtolower($str);
 				if (!stripos($str, '://') === FALSE) { // explicit generic
-					if (!preg_match('/\A[a-z]{1,5}:\/\/(\/)?\Z/', $str)) {
+					if (!preg_match('/\A[a-z]{1,10}:\/\/(\/)?\Z/', $str)) {
 						$err++;
 					}
 				} elseif(stripos($str, ':') === FALSE) { // explicit pipe
@@ -327,7 +337,7 @@ class uri {
 					}
 				}
 				break;
-				
+			
 			case 'USER':
 				$str = urlencode($str);
 				break;
