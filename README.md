@@ -87,6 +87,9 @@ Does not use SSL
 ####Example #3: Production Code
 
 By default, the `append()`, `prepend()`, and `replace()` functions have a safety feature to help prevent errors. This feature often uses regex (slow) to validate the input, and it is recommended that you disable the safety whenever you know the input will be correctly formatted.
+
+Keep in mind that the safety is only meant to prevent most errors, not to make up for crappy code.
+
 ```php
 <?php
 $uri = new uri('http://example.com/path/to/file.ext');
