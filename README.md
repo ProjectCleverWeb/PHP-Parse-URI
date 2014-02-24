@@ -52,13 +52,18 @@ https://example.com/path/to/file.ext#Checkout
 $uri = new uri('http://example.com/path/to/file.ext?q=1');
 
 if ($uri->scheme_name == 'https') {
-	echo 'Uses SSL';
+	echo 'Uses SSL'.PHP_EOL;
 } else {
-	echo 'Does not use SSL';
+	echo 'Does not use SSL'.PHP_EOL;
 }
+
+// Change to an absolute path
+$abs_path = $_SERVER['DOCUMENT_ROOT'].$uri->path;
+echo $abs_path.PHP_EOL;
 
 // easier to read links
 $link = sprintf('<a href="%1$s">%2$s</a>', $uri->str(), $uri->host.$uri->path);
+echo $link;
 
 // FTP logins
 $uri = new uri('ftp://jdoe@example.com/my/home/dir');
@@ -75,6 +80,8 @@ $login = array(
 **Output:**
 ```
 Does not use SSL
+/var/www/path/to/file.ext
+<a href="http://example.com/path/to/file.ext?q=1">example.com/path/to/file.ext</a>
 ```
 
 ####Example #3: Production Code
@@ -83,24 +90,26 @@ By default, the `append()`, `prepend()`, and `replace()` functions have a safety
 
 ```php
 <?php
-$uri = new uri('http://example.com/path/to/file.ext?q=1');
+$uri = new uri('http://example.com/path/to/file.ext');
 
-$hardcoded  = 'msg=hello%20world';
-$user_input = 'msg=I am #1';
+$hardcoded  = 'john%20doe%3F';
+$user_input = 'john doe?';
 
-echo $uri->prepend('QUERY',$hardcoded, 1); // OK (the space is already encoded)
-
-$uri->reset();
-$uri->prepend('QUERY',$user_input); // OK (special characters get encoded)
+echo $uri->replace('USER', $hardcoded, 1).PHP_EOL; // OK (the space is already encoded)
 
 $uri->reset();
-$uri->prepend('QUERY',$user_input, 1); // NOT OK (some browsers might encode the spaces but the "#1" will be treated as a fragment)
+echo $uri->replace('USER', $user_input).PHP_EOL; // OK (special characters get encoded)
+
+$uri->reset();
+echo $uri->replace('USER' ,$user_input, 1).PHP_EOL; // NOT OK (a browser may encode the spaces but the "?" will cause errors)
 
 ?>
 ```
 
 **Output:**
 ```
-Does not use SSL
+http://john%20doe%3F@example.com/path/to/file.ext
+http://john%20doe%3F@example.com/path/to/file.ext
+http://john doe?@example.com/path/to/file.ext
 ```
 
