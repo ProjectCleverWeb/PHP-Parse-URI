@@ -3,31 +3,23 @@
  * Evaluate the script functions as expected
  */
 
-require __DIR__.'./uri.lib.php';
+require __DIR__.'./uri.doc.php';
 
-$uri1 = new uri('http://jdoe:test123@example.com:700/path/to/file.ext?q=1#frag');
-$uri2 = new uri('google.com');
+$uri = new uri('http://example.com/path/to/file.ext');
 
-$prints = array();
-$full   = &$prints['full'];
-$basic  = &$prints['basic'];
+$uri->replace('QUERY', array('rand', (string) rand(1, 10)));
+$uri->replace('PATH', '/foo/bar');
+$uri->append('PATH', '.baz');
+$new = $uri->prepend('HOST', 'www.');
 
+$uri->reset();
+$original = $uri->str();
 
-$full['vars'] = $uri1;
-$basic['vars'] = $uri2;
+$uri->replace('FRAGMENT', 'Checkout');
+$secure = $uri->replace('SCHEME', 'https');
 
-$full['arr()'] = $uri1->arr();
-$basic['arr()'] = $uri2->arr();
-
-$full['str()'] = $uri1->str();
-$basic['str()'] = $uri2->str();
-
-$full['path_info()'] = $uri1->path_info();
-$basic['path_info()'] = $uri2->path_info();
-
-$full['query_arr()'] = $uri1->query_arr();
-$basic['query_arr()'] = $uri2->query_arr();
-
-var_dump($prints);
+echo $new.PHP_EOL;
+echo $original.PHP_EOL;
+echo $secure.PHP_EOL;
 
 ?>

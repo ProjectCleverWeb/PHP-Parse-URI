@@ -27,7 +27,7 @@ $new = $uri->prepend('HOST', 'www.');
 $uri->reset();
 $original = $uri->str();
 
-$uri->replace('FRAGMENT', 'Checkout')
+$uri->replace('FRAGMENT', 'Checkout');
 $secure = $uri->replace('SCHEME', 'https');
 
 echo $new.PHP_EOL;

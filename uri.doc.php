@@ -554,14 +554,15 @@ class uri {
 		if ($disable_safety) {
 			$this->$section = $this->$section.$str;
 		} else {
-			$safety = $this->safety($section, $str);
+			$test = $this->$section.$str;
+			$safety = $this->safety($section, $test);
 			if ($safety != FALSE) {
-				$this->$section = $this->$section.$safety;
+				$this->$section = $safety;
 			} else {
 				return FALSE;
 			}
 		}
-		$t->gen_authority();
+		$this->gen_authority();
 		return $this->str();
 	}
 	
@@ -593,14 +594,15 @@ class uri {
 		if ($disable_safety) {
 			$this->$section = $str.$this->$section;
 		} else {
-			$safety = $this->safety($section, $str);
+			$test = $str.$this->$section;
+			$safety = $this->safety($section, $test);
 			if ($safety != FALSE) {
-				$this->$section = $safety.$this->$section;
+				$this->$section = $safety;
 			} else {
 				return FALSE;
 			}
 		}
-		$t->gen_authority();
+		$this->gen_authority();
 		return $this->str();
 	}
 	
@@ -640,7 +642,7 @@ class uri {
 				return FALSE;
 			}
 		}
-		$t->gen_authority();
+		$this->gen_authority();
 		return $this->str();
 	}
 	
@@ -654,7 +656,9 @@ class uri {
 	 */
 	protected function safety($type, $str) {
 		$type = strtoupper((string) $type);
-		$str = trim((string) $str);
+		if ($type != 'QUERY') {
+			$str = trim((string) $str);
+		}
 		$err = 0;
 		switch ($type) {
 			case 'SCHEME_NAME':
@@ -692,11 +696,11 @@ class uri {
 				break;
 			
 			case 'USER':
-				$str = urlencode($str);
+				$str = rawurlencode($str);
 				break;
 			
 			case 'PASS':
-				$str = urlencode($str);
+				$str = rawurlencode($str);
 				break;
 			
 			case 'HOST':
@@ -734,6 +738,9 @@ class uri {
 				break;
 			
 			case 'QUERY':
+				if (is_array($str)) {
+					$str = http_build_query($str);
+				}
 				if ($str[0] == '?') {
 					$str = substr($str, 1);
 				}
