@@ -30,6 +30,7 @@ class uri {
 	public $scheme;
 	public $protocol;
 	public $scheme_name;
+	public $scheme_symbols;
 	public $user;
 	public $username;
 	public $pass;
@@ -67,16 +68,17 @@ class uri {
 			$t->error = TRUE;
 			$t->error_msg = 'Input was not a string!';
 			
-			$t->scheme      = FALSE;
-			$t->scheme_name = FALSE;
-			$t->user        = FALSE;
-			$t->pass        = FALSE;
-			$t->host        = FALSE;
-			$t->port        = FALSE;
-			$t->authority   = FALSE;
-			$t->path        = FALSE;
-			$t->query       = FALSE;
-			$t->fragment    = FALSE;
+			$t->scheme         = FALSE;
+			$t->scheme_name    = FALSE;
+			$t->scheme_symbols = FALSE;
+			$t->user           = FALSE;
+			$t->pass           = FALSE;
+			$t->host           = FALSE;
+			$t->port           = FALSE;
+			$t->authority      = FALSE;
+			$t->path           = FALSE;
+			$t->query          = FALSE;
+			$t->fragment       = FALSE;
 		} else {
 			$this->parse($input);
 		}
@@ -101,16 +103,17 @@ class uri {
 			return $parsed;
 		}
 		$defaults = array(
-			'scheme'      => '',
-			'scheme_name' => '',
-			'user'        => '',
-			'pass'        => '',
-			'host'        => '',
-			'port'        => '',
-			'authority'   => '',
-			'path'        => '',
-			'query'       => '',
-			'fragment'    => ''
+			'scheme'         => '',
+			'scheme_name'    => '',
+			'scheme_symbols' => '',
+			'user'           => '',
+			'pass'           => '',
+			'host'           => '',
+			'port'           => '',
+			'authority'      => '',
+			'path'           => '',
+			'query'          => '',
+			'fragment'       => ''
 		);
 		
 		$values = $parsed + $defaults;
@@ -190,7 +193,7 @@ class uri {
 	 * 
 	 * @return void
 	 */
-	private function gen_authority() {
+	public function gen_authority() {
 		$t = $this;
 		$authority = '';
 		
@@ -215,6 +218,15 @@ class uri {
 	}
 	
 	/**
+	 * Standard function to re-genrate $scheme
+	 * 
+	 * @return void
+	 */
+	public function gen_scheme() {
+		$this->scheme = $this->scheme_name.$this->scheme_symbols;
+	}
+	
+	/**
 	 * Returns the current URI as an associative
 	 * array similar to parse_url(). However it always
 	 * sets each key as an empty string by default.
@@ -225,6 +237,8 @@ class uri {
 		if ($this->error) {
 			return FALSE;
 		}
+		$this->gen_scheme();
+		$this->gen_authority();
 		return array(
 			'scheme'    => $this->scheme,
 			'user'      => $this->user,
@@ -248,6 +262,8 @@ class uri {
 			return FALSE;
 		}
 		$t = $this;
+		$t->gen_scheme();
+		$t->gen_authority();
 		$str = '';
 		if (!empty($t->scheme)) {
 			$str .= $t->scheme;
@@ -362,7 +378,7 @@ class uri {
 				return FALSE;
 			}
 		}
-		$this->gen_authority();
+		
 		return $this->str();
 	}
 	
@@ -395,7 +411,7 @@ class uri {
 				return FALSE;
 			}
 		}
-		$this->gen_authority();
+		
 		return $this->str();
 	}
 	
@@ -428,7 +444,7 @@ class uri {
 				return FALSE;
 			}
 		}
-		$this->gen_authority();
+		
 		return $this->str();
 	}
 	
@@ -451,6 +467,12 @@ class uri {
 				if (!preg_match('/\A[a-z]{1,10}\Z/', $str)) {
 					$err++;
 				}
+				if (empty($this->scheme_symbols)) {
+					$this->scheme_symbols = '://';
+				}
+				break;
+			
+			case 'SCHEME_SYMBOLS':
 				break;
 			
 			case 'SCHEME':
