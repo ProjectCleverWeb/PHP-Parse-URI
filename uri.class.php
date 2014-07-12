@@ -21,6 +21,10 @@
  */
 class uri {
 	
+	/*** Constants ***/
+	const PARSER_REGEX = '/^(([a-z]+)?(\:\/\/|\:|\/\/))?(?:([a-z0-9$_\.\+!\*\'\(\),;&=\-]+)(?:\:([a-z0-9$_\.\+!\*\'\(\),;&=\-]*))?@)?((?:\d{3}.\d{3}.\d{3}.\d{3})|(?:[a-z0-9\-_]+(?:\.[a-z0-9\-_]+)*))(?:\:([0-9]+))?((?:\:|\/)[a-z0-9\-_\/\.]+)?(?:\?([a-z0-9$_\.\+!\*\'\(\),;:@&=\-%]*))?(?:#([a-z0-9\-_]*))?/i'
+	;
+	
 	/*** Variables ***/
 	public $input;
 	public $scheme;
@@ -141,26 +145,25 @@ class uri {
 	 */
 	private function _parse($uri) {
 		settype($uri, 'string');
-		$regex = (
-			'/'.
-			'^(([a-z]+)?(\:\/\/|\:|\/\/))?'.              // Scheme, Scheme Name, & Scheme Symbols
-			'(?:'.                                        // Auth Start
-				'([a-z0-9$_\.\+!\*\'\(\),;&=\-]+)'.         // Username
-				'(?:\:([a-z0-9$_\.\+!\*\'\(\),;&=\-]*))?'.  // Password
-			'@)?'.                                        // Auth End
-			'('.                                          // Host Start
-				'(?:\d{3}.\d{3}.\d{3}.\d{3})'.              // IP Address
-				'|'.                                        // -OR-
-				'(?:[a-z0-9\-_]+(?:\.[a-z0-9\-_]+)*)'.      // Domain Name
-			')'.                                          // Host End
-			'(?:\:([0-9]+))?'.                            // Port
-			'((?:\:|\/)[a-z0-9\-_\/\.]+)?'.               // Path
-			'(?:\?([a-z0-9$_\.\+!\*\'\(\),;:@&=\-%]*))?'. // Query
-			'(?:#([a-z0-9\-_]*))?'.                       // Fragment
-			'/i'
-		);
-		
-		preg_match_all($regex, $uri, $parsed, PREG_SET_ORDER);
+		// $regex = (
+		//   '/'.
+		//   '^(([a-z]+)?(\:\/\/|\:|\/\/))?'.              // Scheme, Scheme Name, & Scheme Symbols
+		//   '(?:'.                                        // Auth Start
+		//     '([a-z0-9$_\.\+!\*\'\(\),;&=\-]+)'.         // Username
+		//     '(?:\:([a-z0-9$_\.\+!\*\'\(\),;&=\-]*))?'.  // Password
+		//   '@)?'.                                        // Auth End
+		//   '('.                                          // Host Start
+		//     '(?:\d{3}.\d{3}.\d{3}.\d{3})'.              // IP Address
+		//     '|'.                                        // -OR-
+		//     '(?:[a-z0-9\-_]+(?:\.[a-z0-9\-_]+)*)'.      // Domain Name
+		//   ')'.                                          // Host End
+		//   '(?:\:([0-9]+))?'.                            // Port
+		//   '((?:\:|\/)[a-z0-9\-_\/\.]+)?'.               // Path
+		//   '(?:\?([a-z0-9$_\.\+!\*\'\(\),;:@&=\-%]*))?'. // Query
+		//   '(?:#([a-z0-9\-_]*))?'.                       // Fragment
+		//   '/i'
+		// );
+		preg_match_all(SELF::PARSER_REGEX, $uri, $parsed, PREG_SET_ORDER);
 		
 		// No empty slots please
 		$parsed = (
