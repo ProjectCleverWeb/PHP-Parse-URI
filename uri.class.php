@@ -4,12 +4,12 @@
  * PHP 5.3.7 or later. Replaces and extends PHP's
  * parse_url()
  * 
- * Based on P Guardiario's original work
+ * Originally based on P Guardiario's work.
  * 
  * @author    Nicholas Jordon
  * @copyright 2014 Nicholas Jordon - All Rights Reserved
  * @license   http://opensource.org/licenses/MIT
- * @version   0.1.0
+ * @version   1.0.0
  * @see       http://en.wikipedia.org/wiki/URI_scheme
  */
  
@@ -22,8 +22,7 @@
 class uri {
 	
 	/*** Constants ***/
-	const PARSER_REGEX = '/^(([a-z]+)?(\:\/\/|\:|\/\/))?(?:([a-z0-9$_\.\+!\*\'\(\),;&=\-]+)(?:\:([a-z0-9$_\.\+!\*\'\(\),;&=\-]*))?@)?((?:\d{3}.\d{3}.\d{3}.\d{3})|(?:[a-z0-9\-_]+(?:\.[a-z0-9\-_]+)*))(?:\:([0-9]+))?((?:\:|\/)[a-z0-9\-_\/\.]+)?(?:\?([a-z0-9$_\.\+!\*\'\(\),;:@&=\-%]*))?(?:#([a-z0-9\-_]*))?/i'
-	;
+	public const PARSER_REGEX = '/^(([a-z]+)?(\:\/\/|\:|\/\/))?(?:([a-z0-9$_\.\+!\*\'\(\),;&=\-]+)(?:\:([a-z0-9$_\.\+!\*\'\(\),;&=\-]*))?@)?((?:\d{3}.\d{3}.\d{3}.\d{3})|(?:[a-z0-9\-_]+(?:\.[a-z0-9\-_]+)*))(?:\:([0-9]+))?((?:\:|\/)[a-z0-9\-_\/\.]+)?(?:\?([a-z0-9$_\.\+!\*\'\(\),;:@&=\-%]*))?(?:#([a-z0-9\-_]*))?/i';
 	
 	/*** Variables ***/
 	public $input;
@@ -166,7 +165,7 @@ class uri {
 		//   '(?:#([a-z0-9\-_]*))?'.                       // Fragment
 		//   '/i'
 		// );
-		preg_match_all(SELF::PARSER_REGEX, $uri, $parsed, PREG_SET_ORDER);
+		preg_match_all(self::PARSER_REGEX, $uri, $parsed, PREG_SET_ORDER);
 		
 		// No empty slots please
 		$parsed = (
