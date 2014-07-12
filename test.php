@@ -3,23 +3,21 @@
  * Evaluate the script functions as expected
  */
 
-require __DIR__.'./uri.doc.php';
+require __DIR__.'./uri.class.php';
 
-$uri = new uri('http://example.com/path/to/file.ext');
+class URITest extends PHPUnit_Framework_TestCase {
+	public function testSimpleUrl() {
+		$uri1 = new uri('http://example.com/sample');
+		
+		// Check For Errors
+		$this->assertEquals(TRUE, empty($uri1->error));
+		
+		// Check Simple Parsing
+		$this->assertEquals('example.com', $uri1->host);
+		$this->assertEquals('/sample', $uri1->path);
+		$this->assertEquals('http://', $uri1->scheme);
+		$this->assertEquals('http', $uri1->scheme_name);
+	}
+}
 
-$uri->replace('QUERY', array('rand', (string) rand(1, 10)));
-$uri->replace('PATH', '/foo/bar');
-$uri->append('PATH', '.baz');
-$new = $uri->prepend('HOST', 'www.');
 
-$uri->reset();
-$original = $uri->str();
-
-$uri->replace('FRAGMENT', 'Checkout');
-$secure = $uri->replace('SCHEME', 'https');
-
-echo $new.PHP_EOL;
-echo $original.PHP_EOL;
-echo $secure.PHP_EOL;
-
-?>
