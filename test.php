@@ -17,6 +17,7 @@ class URITest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('/sample', $uri1->path);
 		$this->assertEquals('http://', $uri1->scheme);
 		$this->assertEquals('http', $uri1->scheme_name);
+		$this->assertEquals('http://example.com/sample', $uri1->str());
 	}
 }
 

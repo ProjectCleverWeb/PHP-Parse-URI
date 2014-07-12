@@ -90,7 +90,7 @@ class uri {
 			return FALSE;
 		}
 		$t = $this;
-		$parsed = $t->_parse((string) $uri);
+		$parsed = $t->_parse($uri);
 		if (empty($parsed)) {
 			$t->error = TRUE;
 			$t->error = 'Could not parse the input as a URI';
@@ -111,41 +111,75 @@ class uri {
 		
 		$values = $parsed + $defaults;
 		
-		if (!empty($values['scheme'])) {
-			$t->scheme = $values['scheme'].'://';
-		} else {
-			$t->scheme = '';
-		}
-		$t->scheme_name = $values['scheme'];
-		$t->user        = $values['user'];
-		$t->pass        = $values['pass'];
-		$t->host        = $values['host'];
-		$t->port        = $values['port'];
-		$t->path        = $values['path'];
-		$t->query       = $values['query'];
-		$t->fragment    = $values['fragment'];
+		$t->scheme         = $values['scheme'];
+		$t->scheme_name    = $values['scheme_name'];
+		$t->scheme_symbols = $values['scheme_symbols'];
+		$t->user           = $values['user'];
+		$t->pass           = $values['pass'];
+		$t->host           = $values['host'];
+		$t->port           = $values['port'];
+		$t->path           = $values['path'];
+		$t->query          = $values['query'];
+		$t->fragment       = $values['fragment'];
 		
 		$t->gen_authority();
 	}
 	
 	/**
-	 * Helper function for parse(); allows for complete
-	 * PHP 5.3.7 compatibility.
+	 * Helper function for parse(). Uses Regex instead of
+	 * PHP's parse_url(). This makes the parsing much
+	 * more accurate.
+	 * 
+	 * The regex used isn't perfect, but has a VERY LOW
+	 * chance at incorrectly parsing a valid URI, and
+	 * will correctly parse a wider range of URI's than
+	 * parse_url(). This is because of how the URI
+	 * specification allows special characters.
 	 * 
 	 * @param  string $uri The string to be parsed
 	 * @return array       The correctly parsed string as an array
 	 */
 	private function _parse($uri) {
-		$uri = (string) $uri;
-		if (!version_compare(PHP_VERSION, '5.4.7') >= 0) {
-			if ($uri[0] == '/') {
-				unset($uri[0]);
-			}
-			if ($uri[0] == '/') {
-				unset($uri[0]);
-			}
-		}
-		return parse_url((string) $uri);
+		settype($uri, 'string');
+		$regex = (
+			'/'.
+			'^(([a-z]+)?(\:\/\/|\:|\/\/))?'.              // Scheme, Scheme Name, & Scheme Symbols
+			'(?:'.                                        // Auth Start
+				'([a-z0-9$_\.\+!\*\'\(\),;&=\-]+)'.         // Username
+				'(?:\:([a-z0-9$_\.\+!\*\'\(\),;&=\-]*))?'.  // Password
+			'@)?'.                                        // Auth End
+			'('.                                          // Host Start
+				'(?:\d{3}.\d{3}.\d{3}.\d{3})'.              // IP Address
+				'|'.                                        // -OR-
+				'(?:[a-z0-9\-_]+(?:\.[a-z0-9\-_]+)*)'.      // Domain Name
+			')'.                                          // Host End
+			'(?:\:([0-9]+))?'.                            // Port
+			'((?:\:|\/)[a-z0-9\-_\/\.]+)?'.               // Path
+			'(?:\?([a-z0-9$_\.\+!\*\'\(\),;:@&=\-%]*))?'. // Query
+			'(?:#([a-z0-9\-_]*))?'.                       // Fragment
+			'/i'
+		);
+		
+		preg_match_all($regex, $uri, $parsed, PREG_SET_ORDER);
+		
+		// No empty slots please
+		$parsed = (
+			$parsed[0] +
+			array('','','','','','','','','','','')
+		);
+		
+		return array(
+			'scheme'         => $parsed[1],
+			'scheme_name'    => $parsed[2],
+			'scheme_symbols' => $parsed[3],
+			'user'           => $parsed[4],
+			'pass'           => $parsed[5],
+			'host'           => $parsed[6],
+			'port'           => $parsed[7],
+			'path'           => $parsed[8],
+			'query'          => $parsed[9],
+			'fragment'       => $parsed[10],
+		);
 	}
 	
 	/**
