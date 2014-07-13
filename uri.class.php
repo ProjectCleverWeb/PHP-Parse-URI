@@ -145,6 +145,9 @@ class uri {
 	 * @return array       The correctly parsed string as an array
 	 */
 	private function _parse($uri) {
+		if ($this->error) {
+			return FALSE;
+		}
 		settype($uri, 'string');
 		// $regex = (
 		//   '/'.
@@ -196,6 +199,9 @@ class uri {
 	 * @return void
 	 */
 	public function gen_authority() {
+		if ($this->error) {
+			return FALSE;
+		}
 		$t = $this;
 		$authority = '';
 		
@@ -225,6 +231,9 @@ class uri {
 	 * @return void
 	 */
 	public function gen_scheme() {
+		if ($this->error) {
+			return FALSE;
+		}
 		$this->scheme = $this->scheme_name.$this->scheme_symbols;
 	}
 	
@@ -440,6 +449,9 @@ class uri {
 	 * @return mixed        The resulting string, or FALSE on failure.
 	 */
 	private function _modifier($type, $str) {
+		if ($this->error) {
+			return FALSE;
+		}
 		$type = strtoupper((string) $type);
 		if ($type != 'QUERY') {
 			$str = trim((string) $str);
