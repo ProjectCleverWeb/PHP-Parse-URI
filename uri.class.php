@@ -127,6 +127,7 @@ class uri {
 		$t->fragment       = $values['fragment'];
 		
 		$t->gen_authority();
+		return true;
 	}
 	
 	/**
