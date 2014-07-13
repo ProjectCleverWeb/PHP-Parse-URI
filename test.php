@@ -61,6 +61,59 @@ class URITest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('fragment', $uri1->fragment);
 	}
 	
+	
+	/**
+	 * @test
+	 * @depends Advanced_Parsing
+	 */
+	public function Error_Catching() {
+		// Invalid
+		$uri1 = new uri('');
+		$uri2 = new uri(array());
+		$uri3 = new uri((object) array());
+		$uri4 = new uri(1);
+		// Valid
+		$uri5 = new uri('https://user:pass@example.com:777/path/to/script.php?query=str#fragment');
+		
+		
+		
+		// Invalid Input
+		$this->assertEquals(TRUE, $uri1->error);
+		$this->assertEquals(TRUE, $uri2->error);
+		$this->assertEquals(TRUE, $uri3->error);
+		$this->assertEquals(TRUE, $uri4->error);
+		
+		// Invalid section to modify
+		$this->assertEquals(FALSE, $uri5->append('invalid', ''));
+		$this->assertEquals(FALSE, $uri5->prepend('invalid', ''));
+		$this->assertEquals(FALSE, $uri5->replace('invalid', ''));
+		
+		// Ensure all vars return FALSE
+		$this->assertEquals(FALSE, $uri1->scheme);
+		$this->assertEquals(FALSE, $uri1->scheme_name);
+		$this->assertEquals(FALSE, $uri1->scheme_symbols);
+		$this->assertEquals(FALSE, $uri1->user);
+		$this->assertEquals(FALSE, $uri1->pass);
+		$this->assertEquals(FALSE, $uri1->host);
+		$this->assertEquals(FALSE, $uri1->port);
+		$this->assertEquals(FALSE, $uri1->path);
+		$this->assertEquals(FALSE, $uri1->query);
+		$this->assertEquals(FALSE, $uri1->fragment);
+		
+		// All methods, except reset(), should return FALSE while the object is in error
+		$this->assertEquals(FALSE, $uri1->gen_authority());
+		$this->assertEquals(FALSE, $uri1->gen_scheme());
+		$this->assertEquals(FALSE, $uri1->arr());
+		$this->assertEquals(FALSE, $uri1->str());
+		$this->assertEquals(FALSE, $uri1->p_str());
+		$this->assertEquals(FALSE, $uri1->path_info());
+		$this->assertEquals(FALSE, $uri1->query_arr());
+		$this->assertEquals(FALSE, $uri1->append(NULL, NULL));
+		$this->assertEquals(FALSE, $uri1->prepend(NULL, NULL));
+		$this->assertEquals(FALSE, $uri1->replace(NULL, NULL));
+		
+	}
+	
 	/**
 	 * @test
 	 * @depends Advanced_Parsing
@@ -132,10 +185,6 @@ class URITest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends Reset
-	 * @covers uri::_modifier
-	 * @covers uri::replace
-	 * @covers uri::prepend
-	 * @covers uri::append
 	 */
 	public function Modify_Scheme_Name() {
 		// Test both when there is and isn't pre-existing data
@@ -170,10 +219,6 @@ class URITest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends Reset
-	 * @covers uri::_modifier
-	 * @covers uri::replace
-	 * @covers uri::prepend
-	 * @covers uri::append
 	 */
 	public function Modify_Scheme_Symbols() {
 		// Test both when there is and isn't pre-existing data
@@ -208,10 +253,6 @@ class URITest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends Reset
-	 * @covers uri::_modifier
-	 * @covers uri::replace
-	 * @covers uri::prepend
-	 * @covers uri::append
 	 */
 	public function Modify_Scheme() {
 		// Test both when there is and isn't pre-existing data
@@ -246,15 +287,12 @@ class URITest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends Reset
-	 * @covers uri::_modifier
-	 * @covers uri::replace
-	 * @covers uri::prepend
-	 * @covers uri::append
 	 */
 	public function Modify_User() {
 		// Test both when there is and isn't pre-existing data
 		$uri1 = new uri('example.com');
 		$uri2 = new uri('https://user:pass@example.com:777/path/to/script.php?query=str#fragment');
+		$uri3 = new uri('user@gmail.com'); // user w/out pass
 		
 		// Check For Errors
 		$this->assertEmpty($uri1->error);
@@ -268,6 +306,12 @@ class URITest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(
 			'https://john:pass@example.com:777/path/to/script.php?query=str#fragment',
 			$uri2->replace('USER', 'john')
+		);
+		$uri3->user = 'jane';
+		$uri3->gen_authority();
+		$this->assertEquals(
+			'jane@gmail.com',
+			$uri3->str()
 		);
 		// Check Prepend
 		$this->assertEquals(
@@ -284,10 +328,6 @@ class URITest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends Reset
-	 * @covers uri::_modifier
-	 * @covers uri::replace
-	 * @covers uri::prepend
-	 * @covers uri::append
 	 */
 	public function Modify_Pass() {
 		// Test both when there is and isn't pre-existing data
@@ -322,10 +362,6 @@ class URITest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends Reset
-	 * @covers uri::_modifier
-	 * @covers uri::replace
-	 * @covers uri::prepend
-	 * @covers uri::append
 	 */
 	public function Modify_Host() {
 		// Test both when there is and isn't pre-existing data
@@ -360,10 +396,6 @@ class URITest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends Reset
-	 * @covers uri::_modifier
-	 * @covers uri::replace
-	 * @covers uri::prepend
-	 * @covers uri::append
 	 */
 	public function Modify_Port() {
 		// Test both when there is and isn't pre-existing data
@@ -398,10 +430,6 @@ class URITest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends Reset
-	 * @covers uri::_modifier
-	 * @covers uri::replace
-	 * @covers uri::prepend
-	 * @covers uri::append
 	 */
 	public function Modify_Path() {
 		// Test both when there is and isn't pre-existing data
@@ -436,10 +464,6 @@ class URITest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @depends Reset
-	 * @covers uri::_modifier
-	 * @covers uri::replace
-	 * @covers uri::prepend
-	 * @covers uri::append
 	 */
 	public function Modify_Query() {
 		// Test both when there is and isn't pre-existing data
@@ -452,22 +476,56 @@ class URITest extends PHPUnit_Framework_TestCase {
 		
 		// Check Replace
 		$this->assertEquals(
-			'example.com',
-			$uri1->replace('PATH', '/path')
+			'example.com?r=1',
+			$uri1->replace('QUERY', 'r=1')
 		);
 		$this->assertEquals(
-			'https://user:pass@example.com:777/path/to/script.php?query=str#fragment',
-			$uri2->replace('PATH', '/path')
+			'https://user:pass@example.com:777/path/to/script.php?l=2#fragment',
+			$uri2->replace('QUERY', 'l=2')
 		);
 		// Check Prepend
 		$this->assertEquals(
-			'example.com/sample/path',
-			$uri1->prepend('PATH', '/sample')
+			'example.com?q=s&r=1',
+			$uri1->prepend('QUERY', 'q=s&')
 		);
 		// Check Append
 		$this->assertEquals(
-			'https://user:pass@example.com:777/path/to/some/random/file.txt?query=str#fragment',
-			$uri2->append('PATH', '/to/some/random/file.txt')
+			'https://user:pass@example.com:777/path/to/script.php?l=2&p=z#fragment',
+			$uri2->append('QUERY', '&p=z')
+		);
+	}
+	
+	/**
+	 * @test
+	 * @depends Reset
+	 */
+	public function Modify_Fragment() {
+		// Test both when there is and isn't pre-existing data
+		$uri1 = new uri('example.com');
+		$uri2 = new uri('https://user:pass@example.com:777/path/to/script.php?query=str#fragment');
+		
+		// Check For Errors
+		$this->assertEmpty($uri1->error);
+		$this->assertEmpty($uri2->error);
+		
+		// Check Replace
+		$this->assertEquals(
+			'example.com#header',
+			$uri1->replace('FRAGMENT', 'header')
+		);
+		$this->assertEquals(
+			'https://user:pass@example.com:777/path/to/script.php?query=str#footer',
+			$uri2->replace('FRAGMENT', 'footer')
+		);
+		// Check Prepend
+		$this->assertEquals(
+			'example.com#custom-header',
+			$uri1->prepend('FRAGMENT', 'custom-')
+		);
+		// Check Append
+		$this->assertEquals(
+			'https://user:pass@example.com:777/path/to/script.php?query=str#footer-end',
+			$uri2->append('FRAGMENT', '-end')
 		);
 	}
 	
