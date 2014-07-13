@@ -350,15 +350,13 @@ class uri {
 	
 	/**
 	 * Appends $str to $section. By default it tries to
-	 * autocorrect some errors. Setting $disable_safety
-	 * to TRUE or 1 temporarly removes this functionality.
+	 * autocorrect some errors.
 	 * 
 	 * @param  string  $section        The section to append to.
 	 * @param  string  $str            The string to append.
-	 * @param  boolean $disable_safety The safety toggle.
 	 * @return string                  The resulting URI.
 	 */
-	public function append($section, $str, $disable_safety = FALSE) {
+	public function append($section, $str) {
 		if ($this->error) {
 			return FALSE;
 		}
@@ -366,16 +364,12 @@ class uri {
 		if (!isset($this->$section)) {
 			return FALSE;
 		}
-		if ($disable_safety) {
-			$this->$section = $this->$section.$str;
+		$test = $this->$section.$str;
+		$modifier = $this->_modifier($section, $test);
+		if ($modifier != FALSE) {
+			$this->$section = $modifier;
 		} else {
-			$test = $this->$section.$str;
-			$safety = $this->safety($section, $test);
-			if ($safety != FALSE) {
-				$this->$section = $safety;
-			} else {
-				return FALSE;
-			}
+			return FALSE;
 		}
 		
 		return $this->str();
@@ -383,15 +377,13 @@ class uri {
 	
 	/**
 	 * Prepends $str to $section. By default it tries to
-	 * autocorrect some errors. Setting $disable_safety
-	 * to TRUE or 1 temporarly removes this functionality.
+	 * autocorrect some errors.
 	 * 
 	 * @param  string  $section        The section to prepend to.
 	 * @param  string  $str            The string to prepend.
-	 * @param  boolean $disable_safety The safety toggle.
 	 * @return string                  The resulting URI.
 	 */
-	public function prepend($section, $str, $disable_safety = FALSE) {
+	public function prepend($section, $str) {
 		if ($this->error) {
 			return FALSE;
 		}
@@ -399,16 +391,12 @@ class uri {
 		if (!isset($this->$section)) {
 			return FALSE;
 		}
-		if ($disable_safety) {
-			$this->$section = $str.$this->$section;
+		$test = $str.$this->$section;
+		$modifier = $this->_modifier($section, $test);
+		if ($modifier != FALSE) {
+			$this->$section = $modifier;
 		} else {
-			$test = $str.$this->$section;
-			$safety = $this->safety($section, $test);
-			if ($safety != FALSE) {
-				$this->$section = $safety;
-			} else {
-				return FALSE;
-			}
+			return FALSE;
 		}
 		
 		return $this->str();
@@ -416,16 +404,13 @@ class uri {
 	
 	/**
 	 * Replaces $section with $str. By default it tries
-	 * to autocorrect some errors. Setting
-	 * $disable_safety to TRUE or 1 temporarly removes
-	 * this functionality.
+	 * to autocorrect some errors.
 	 * 
 	 * @param  string  $section        The section to replace.
 	 * @param  string  $str            The string to replace $section with.
-	 * @param  boolean $disable_safety The safety toggle.
 	 * @return string                  The resulting URI.
 	 */
-	public function replace($section, $str, $disable_safety = FALSE) {
+	public function replace($section, $str) {
 		if ($this->error) {
 			return FALSE;
 		}
@@ -433,15 +418,11 @@ class uri {
 		if (!isset($this->$section)) {
 			return FALSE;
 		}
-		if ($disable_safety) {
-			$this->$section = $str;
+		$modifier = $this->_modifier($section, $str);
+		if ($modifier != FALSE) {
+			$this->$section = $modifier;
 		} else {
-			$safety = $this->safety($section, $str);
-			if ($safety != FALSE) {
-				$this->$section = $safety;
-			} else {
-				return FALSE;
-			}
+			return FALSE;
 		}
 		
 		return $this->str();
@@ -455,7 +436,7 @@ class uri {
 	 * @param  string $str  The string to attempt to correct.
 	 * @return mixed        The resulting string, or FALSE on failure.
 	 */
-	protected function safety($type, $str) {
+	private function _modifier($type, $str) {
 		$type = strtoupper((string) $type);
 		if ($type != 'QUERY') {
 			$str = trim((string) $str);
