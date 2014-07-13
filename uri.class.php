@@ -63,7 +63,7 @@ class uri {
 		$t->username = &$this->user;
 		$t->password = &$this->pass;
 		$t->fqdn     = &$this->host;
-		if (!is_string($input)) {
+		if (is_string($input) == FALSE || $this->parse($input) == FALSE) {
 			$t->error = TRUE;
 			$t->error_msg = 'Input was not a string!';
 			
@@ -78,8 +78,6 @@ class uri {
 			$t->path           = FALSE;
 			$t->query          = FALSE;
 			$t->fragment       = FALSE;
-		} else {
-			$this->parse($input);
 		}
 	}
 	
@@ -98,7 +96,7 @@ class uri {
 		$parsed = $t->_parse($uri);
 		if (empty($parsed)) {
 			$t->error = TRUE;
-			$t->error = 'Could not parse the input as a URI';
+			$t->error_msg = 'Could not parse the input as a URI';
 			return $parsed;
 		}
 		$defaults = array(
@@ -166,6 +164,10 @@ class uri {
 		//   '/i'
 		// );
 		preg_match_all(self::PARSER_REGEX, $uri, $parsed, PREG_SET_ORDER);
+		
+		if (!isset($parsed[0][6])) {
+			return FALSE;
+		}
 		
 		// No empty slots please
 		$parsed = (
