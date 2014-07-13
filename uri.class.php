@@ -22,14 +22,14 @@
 class uri {
 	
 	/*** Constants ***/
-	public const PARSER_REGEX = '/^(([a-z]+)?(\:\/\/|\:|\/\/))?(?:([a-z0-9$_\.\+!\*\'\(\),;&=\-]+)(?:\:([a-z0-9$_\.\+!\*\'\(\),;&=\-]*))?@)?((?:\d{3}.\d{3}.\d{3}.\d{3})|(?:[a-z0-9\-_]+(?:\.[a-z0-9\-_]+)*))(?:\:([0-9]+))?((?:\:|\/)[a-z0-9\-_\/\.]+)?(?:\?([a-z0-9$_\.\+!\*\'\(\),;:@&=\-%]*))?(?:#([a-z0-9\-_]*))?/i';
+	const PARSER_REGEX = '/^(([a-z]+)?(\:\/\/|\:|\/\/))?(?:([a-z0-9$_\.\+!\*\'\(\),;&=\-]+)(?:\:([a-z0-9$_\.\+!\*\'\(\),;&=\-]*))?@)?((?:\d{3}.\d{3}.\d{3}.\d{3})|(?:[a-z0-9\-_]+(?:\.[a-z0-9\-_]+)*))(?:\:([0-9]+))?((?:\:|\/)[a-z0-9\-_\/\.]+)?(?:\?([a-z0-9$_\.\+!\*\'\(\),;:@&=\-%]*))?(?:#([a-z0-9\-_]*))?/i';
 	
 	/*** Variables ***/
 	public $input;
 	public $scheme;
-	public $protocol;
 	public $scheme_name;
 	public $scheme_symbols;
+	public $protocol;
 	public $user;
 	public $username;
 	public $pass;
@@ -465,8 +465,7 @@ class uri {
 			case 'SCHEME_NAME':
 				if (!preg_match('/\A[a-z]{1,10}\Z/', $str)) {
 					$err++;
-				}
-				if (empty($this->scheme_symbols)) {
+				} elseif (empty($this->scheme_symbols)) {
 					$this->scheme_symbols = '://';
 				}
 				break;
@@ -475,31 +474,20 @@ class uri {
 				break;
 			
 			case 'SCHEME':
-				if (strpos($str, '\\') !== FALSE) {
-					$str = str_replace('\\', '/', $str);
-				}
-				if (strpos($str, '//') === FALSE && stripos($str, ':') === FALSE) {
-					if (!empty($str)) {
-						$str = $str.'://'; // assume it is generic
+				if (empty($str)) {
+					$this->scheme = $this->scheme_name = $this->scheme_symbols = '';
+				} else {
+					preg_match('/\A([a-z]{1,10})?((?:\:)?(?:\/{2,3})?)\Z/i', $str, $matches);
+					if (empty($matches[1]) && empty($matches[2])) {
+						$err++;
 					} else {
-						break; // there is nothing to check
+						$matches              = $matches + array('', '', '');
+						$this->scheme         = $matches[0];
+						$this->scheme_name    = $matches[1];
+						$this->scheme_symbols = $matches[2];
 					}
 				}
 				
-				$str = strtolower($str);
-				if (!stripos($str, '://') === FALSE) { // explicit generic
-					if (!preg_match('/\A[a-z]{1,10}:\/\/(\/)?\Z/', $str)) {
-						$err++;
-					}
-				} elseif(stripos($str, ':') === FALSE) { // explicit pipe
-					if (!preg_match('/\A[a-z]{1,10}:\Z/', $str)) {
-						$err++;
-					}
-				} elseif(stripos($str, '//') === FALSE) { // inherit
-					if ($str != '//') {
-						$err++;
-					}
-				}
 				break;
 			
 			case 'USER':
