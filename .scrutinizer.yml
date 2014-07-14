@@ -9,6 +9,8 @@ build:
     environment:
         php:
             version: 5.5.12
+filter:
+    paths: [uri.class.php]
 checks:
     php:
         verify_property_names: true
