@@ -25,27 +25,27 @@ class uri {
 	const PARSER_REGEX = '/^(([a-z]+)?(\:\/\/|\:|\/\/))?(?:([a-z0-9$_\.\+!\*\'\(\),;&=\-]+)(?:\:([a-z0-9$_\.\+!\*\'\(\),;&=\-]*))?@)?((?:\d{3}.\d{3}.\d{3}.\d{3})|(?:[a-z0-9\-_]+(?:\.[a-z0-9\-_]+)*))(?:\:([0-9]+))?((?:\:|\/)[a-z0-9\-_\/\.]+)?(?:\?([a-z0-9$_\.\+!\*\'\(\),;:@&=\-%]*))?(?:#([a-z0-9\-_]*))?/i';
 	
 	/*** Variables ***/
+	public $authority;
+	public $error;
+	public $error_msg;
+	public $fqdn;
+	public $fragment;
+	public $host;
 	public $input;
+	public $protocol;
+	public $pass;
+	public $password;
+	public $path;
+	public $port;
+	public $query;
 	public $scheme;
 	public $scheme_name;
 	public $scheme_symbols;
-	public $protocol;
 	public $user;
 	public $username;
-	public $pass;
-	public $password;
-	public $host;
-	public $fqdn;
-	public $port;
-	public $authority;
-	public $path;
-	public $query;
-	public $fragment;
-	public $error;
-	public $error_msg;
 	
 	
-	/*** Methods ***/
+	/*** Magic Methods ***/
 	
 	
 	/**
@@ -62,6 +62,7 @@ class uri {
 		$t->protocol = &$this->scheme;
 		$t->username = &$this->user;
 		$t->password = &$this->pass;
+		$t->domain   = &$this->host;
 		$t->fqdn     = &$this->host;
 		if (is_string($input) == FALSE || $this->parse($input) == FALSE) {
 			$t->error = TRUE;
@@ -80,6 +81,33 @@ class uri {
 			$t->fragment       = FALSE;
 		}
 	}
+	
+	/**
+	 * If this class gets typecast as a sting it should
+	 * return the current URI as a string.
+	 * 
+	 * @return string The current URI.
+	 */
+	public function __toString() {
+		return $this->str();
+	}
+	
+	/**
+	 * If this object is called as a function, it will
+	 * re-initialize around the new input
+	 * 
+	 * @param  string $input The new URI to parse
+	 * @return void
+	 */
+	public function __invoke($input) {
+		__construct($input);
+	}
+	
+	
+	
+	/*** Methods ***/
+	
+	
 	
 	/**
 	 * Parses the supplied string as a URI and sets the
@@ -244,7 +272,7 @@ class uri {
 		}
 		$this->gen_scheme();
 		$this->gen_authority();
-		return array(
+		$arr = array(
 			'scheme'         => $this->scheme,
 			'scheme_name'    => $this->scheme_name,
 			'scheme_symbols' => $this->scheme_symbols,
@@ -257,6 +285,25 @@ class uri {
 			'query'          => $this->query,
 			'fragment'       => $this->fragment
 		);
+		
+		// create aliases correctly
+		$arr['protocol'] = &$arr['scheme'];
+		$arr['username'] = &$arr['user'];
+		$arr['password'] = &$arr['pass'];
+		$arr['domain']   = &$arr['host'];
+		$arr['fqdn']     = &$arr['host'];
+		
+		ksort($arr);
+		
+		return $arr;
+	}
+	
+	/**
+	 * Alias of arr()
+	 * @return array The URI as an array.
+	 */
+	public function to_array() {
+		return $this->arr();
 	}
 	
 	/**
@@ -300,6 +347,14 @@ class uri {
 			$str .= '#'.$t->fragment;
 		}
 		return $str;
+	}
+	
+	/**
+	 * alias of str()
+	 * @return string The current URI.
+	 */
+	public function to_string() {
+		return $this->str();
 	}
 	
 	/**
