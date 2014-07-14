@@ -1,6 +1,8 @@
 #PHP URI
 
-PHP library for working with URI's. Requires PHP `5.3.7` or later. Replaces and extends PHP's `parse_url()`.
+[![Build Status](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/badges/build.png?b=master)](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/build-status/master)[![Code Coverage](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/?branch=master)[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/?branch=master)
+
+A PHP library for working with URI's. Requires PHP `5.3.7` or later. Replaces and extends PHP's `parse_url()`.
 
 
 
@@ -114,4 +116,29 @@ http://john%20doe%3F@example.com/path/to/file.ext
 http://john%20doe%3F@example.com/path/to/file.ext
 http://john doe?@example.com/path/to/file.ext
 ```
+
+
+##Copyright &amp; Licensing
+
+>The MIT License (MIT)
+>
+>Copyright (c) 2014 Nicholas Jordon - All Rights Reserved
+>
+>Permission is hereby granted, free of charge, to any person obtaining a copy
+>of this software and associated documentation files (the "Software"), to deal
+>in the Software without restriction, including without limitation the rights
+>to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+>copies of the Software, and to permit persons to whom the Software is
+>furnished to do so, subject to the following conditions:
+>
+>The above copyright notice and this permission notice shall be included in
+>all copies or substantial portions of the Software.
+>
+>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+>IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+>FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+>AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+>LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+>OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+>THE SOFTWARE.
 

@@ -1,5 +1,5 @@
 language: php
-script: phpunit --testdox-text testdox.txt --coverage-text test.php
+script: phpunit --testdox-text=testdox --coverage-clover=coverage.clover --coverage-text test.php
 php:
   - 5.6
   - 5.5
@@ -8,4 +8,6 @@ php:
   - hhvm
   - hhvm-nightly
 after_script:
-  - less textdox.txt
+  - less textdox
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
