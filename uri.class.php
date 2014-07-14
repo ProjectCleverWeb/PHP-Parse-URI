@@ -320,27 +320,17 @@ class uri {
 		$t = $this;
 		$t->gen_scheme();
 		$t->gen_authority();
-		$str_arr = array();
-		if (!empty($t->scheme)) {
-			$str_arr[] = $t->scheme;
+		$str_arr = array($t->scheme, $t->user);
+		if (empty($t->user) == FALSE && empty($t->pass)) {
+			$str_arr[] = '@';
+		} elseif (empty($t->user) == FALSE && empty($t->pass) == FALSE) {
+			$str_arr[] = ':'.$t->pass.'@';
 		}
-		if (!empty($t->user)) {
-			$str_arr[] = $t->user;
-			if (empty($t->pass)) {
-				$str_arr[] = '@';
-			} else {
-				$str_arr[] = ':'.$t->pass.'@';
-			}
-		}
-		if (!empty($t->host)) {
-			$str_arr[] = $t->host;
-		}
+		$str_arr[] = $t->host;
 		if (!empty($t->port)) {
 			$str_arr[] = ':'.$t->port;
 		}
-		if (!empty($t->path)) {
-			$str_arr[] = $t->path;
-		}
+		$str_arr[] = $t->path;
 		if (!empty($t->query)) {
 			$str_arr[] = '?'.$t->query;
 		}
