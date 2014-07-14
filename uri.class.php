@@ -245,15 +245,17 @@ class uri {
 		$this->gen_scheme();
 		$this->gen_authority();
 		return array(
-			'scheme'    => $this->scheme,
-			'user'      => $this->user,
-			'pass'      => $this->pass,
-			'host'      => $this->host,
-			'port'      => $this->port,
-			'authority' => $this->authority,
-			'path'      => $this->path,
-			'query'     => $this->query,
-			'fragment'  => $this->fragment
+			'scheme'         => $this->scheme,
+			'scheme_name'    => $this->scheme_name,
+			'scheme_symbols' => $this->scheme_symbols,
+			'user'           => $this->user,
+			'pass'           => $this->pass,
+			'host'           => $this->host,
+			'port'           => $this->port,
+			'authority'      => $this->authority,
+			'path'           => $this->path,
+			'query'          => $this->query,
+			'fragment'       => $this->fragment
 		);
 	}
 	
