@@ -14,7 +14,3 @@ checks:
         code_rating: true
         code_metrics: true
         duplication: true
-tools:
-    php_sim: true
-    php_pdepend: true
-    php_analyzer: true
