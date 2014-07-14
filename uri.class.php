@@ -26,6 +26,7 @@ class uri {
 	
 	/*** Variables ***/
 	public $authority;
+	public $domain;
 	public $error;
 	public $error_msg;
 	public $fqdn;
