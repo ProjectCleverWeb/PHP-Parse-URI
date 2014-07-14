@@ -46,12 +46,3 @@ checks:
         remove_php_closing_tag: true
 tools:
     external_code_coverage: true
-    php_mess_detector: true
-    php_code_sniffer: true
-    sensiolabs_security_checker: true
-    php_code_coverage: true
-    php_pdepend: true
-    php_loc:
-        enabled: true
-    php_cpd:
-        enabled: true
