@@ -320,35 +320,34 @@ class uri {
 		$t = $this;
 		$t->gen_scheme();
 		$t->gen_authority();
-		$str = '';
+		$str_arr = '';
 		if (!empty($t->scheme)) {
-			$str .= $t->scheme;
+			$str_arr[] = $t->scheme;
 		}
 		if (!empty($t->user)) {
-			$str .= $t->user;
+			$str_arr[] = $t->user;
 			if (empty($t->pass)) {
-				$str .= '@';
+				$str_arr[] = '@';
 			} else {
-				$str .= ':';
-				$str .= $t->pass.'@';
+				$str_arr[] = ':'.$t->pass.'@';
 			}
 		}
 		if (!empty($t->host)) {
-			$str .= $t->host;
+			$str_arr[] = $t->host;
 		}
 		if (!empty($t->port)) {
-			$str .= ':'.$t->port;
+			$str_arr[] = ':'.$t->port;
 		}
 		if (!empty($t->path)) {
-			$str .= $t->path;
+			$str_arr[] = $t->path;
 		}
 		if (!empty($t->query)) {
-			$str .= '?'.$t->query;
+			$str_arr[] = '?'.$t->query;
 		}
 		if (!empty($t->fragment)) {
-			$str .= '#'.$t->fragment;
+			$str_arr[] = '#'.$t->fragment;
 		}
-		return $str;
+		return implode('', $str_arr);
 	}
 	
 	/**
