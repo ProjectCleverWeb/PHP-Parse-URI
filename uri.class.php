@@ -379,7 +379,7 @@ class uri {
 	 * Array Keys:
 	 *   dirname, basename, extension, filename, array
 	 * 
-	 * @return array The $path's information
+	 * @return false|array The $path's information
 	 */
 	public function path_info() {
 		if ($this->error) {

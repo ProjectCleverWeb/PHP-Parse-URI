@@ -590,6 +590,55 @@ class URITest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('user', $arr2['user']);
 	}
 	
+	/**
+	 * @test
+	 * @depends Reset
+	 */
+	public function Path_Info() {
+		// Test both when there is and isn't pre-existing data
+		$uri1 = new uri('example.com');
+		$uri2 = new uri('https://user:pass@example.com:777/path/to/script.php?query=str#fragment');
+		
+		// Check For Errors
+		$this->assertEmpty($uri1->error);
+		$this->assertEmpty($uri2->error);
+		
+		// Setup
+		$arr1 = $uri1->path_info();
+		$arr2 = $uri2->path_info();
+		
+		// Check that all keys are set (even if empty)
+		$this->assertArrayHasKey('array', $arr1);
+		$this->assertArrayHasKey('basename', $arr1);
+		$this->assertArrayHasKey('dirname', $arr1);
+		$this->assertArrayHasKey('extension', $arr1);
+		$this->assertArrayHasKey('filename', $arr1);
+		
+		// Check Values
+		$this->assertEquals('path', $arr2['array'][0]);
+		$this->assertEquals('to', $arr2['array'][1]);
+		$this->assertEquals('script.php', $arr2['array'][2]);
+		$this->assertEquals('script.php', $arr2['basename']);
+		$this->assertEquals('/path/to', $arr2['dirname']);
+		$this->assertEquals('php', $arr2['extension']);
+		$this->assertEquals('script', $arr2['filename']);
+	}
+	
+	/**
+	 * @test
+	 * @depends Reset
+	 */
+	public function Invoke() {
+		// Test both when there is and isn't pre-existing data
+		$uri1 = new uri('example.com');
+		
+		// Check For Errors
+		$this->assertEmpty($uri1->error);
+		
+		$uri1('google.com');
+		$this->assertEquals('google.com', $uri1->str());
+	}
+	
 	
 	
 }
