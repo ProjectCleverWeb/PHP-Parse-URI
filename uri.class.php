@@ -9,7 +9,7 @@
  * @author    Nicholas Jordon
  * @copyright 2014 Nicholas Jordon - All Rights Reserved
  * @license   http://opensource.org/licenses/MIT
- * @version   1.0.0
+ * @version   1.0.0 RC1
  * @see       http://en.wikipedia.org/wiki/URI_scheme
  */
  

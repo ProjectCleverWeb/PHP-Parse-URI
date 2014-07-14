@@ -1,27 +1,23 @@
-#PHP URI
-
-[![Build Status](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/badges/build.png?b=master)](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/build-status/master)[![Code Coverage](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/?branch=master)[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/?branch=master)
+#PHP URI [![Build Status](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/badges/build.png?b=master)](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/build-status/master) [![Code Coverage](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/?branch=master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ProjectCleverWeb/PHP-URI/?branch=master)#
 
 A PHP library for working with URI's. Requires PHP `5.3.7` or later. Replaces and extends PHP's `parse_url()`.
-
-
 
 Copyright &copy; 2014 Nicholas Jordon - All Rights Reserved <br>
 Licensed under the MIT license
 
+####Download: [1.0.0 RC1](https://github.com/ProjectCleverWeb/PHP-URI/archive/master.zip)####
+
 ---
 
-##Usage
-As with any library you will need to include the script like so: `include_once __DIR__.'/php-uri/uri.lib.php';`<br>
-The `uri.doc.php` file is meant to help your understanding of the script, and should not be used in production code. 
+##Examples##
 
-####Example #1: String Operations
+####Example #1: String Operations###
 
 ```php
 <?php
 $uri = new uri('http://example.com/path/to/file.ext');
 
-$uri->replace('QUERY', array('rand', (string) rand(1, 10)));
+$uri->replace('QUERY', array('rand' => (string) rand(1, 10)));
 $uri->replace('PATH', '/foo/bar');
 $uri->append('PATH', '.baz');
 $new = $uri->prepend('HOST', 'www.');
@@ -30,24 +26,22 @@ $uri->reset();
 $original = $uri->str();
 
 $uri->replace('FRAGMENT', 'Checkout');
-$secure = $uri->replace('SCHEME', 'https');
+$secure = $uri->replace('SCHEME_NAME', 'https');
 
 echo $new.PHP_EOL;
 echo $original.PHP_EOL;
-echo $secure.PHP_EOL;
-
+echo $secure;
 ?>
 ```
 
 **Output:**
 ```
-http://www.example.com/foo/bar.baz?rand=2
+http://www.example.com/foo/bar.baz?rand=6
 http://example.com/path/to/file.ext
 https://example.com/path/to/file.ext#Checkout
 ```
 
-
-####Example #2: Information Gathering
+####Example #2: Information Gathering####
 
 ```php
 <?php
@@ -75,7 +69,6 @@ $login = array(
 	'domain'   => $uri->host,
 	'path'     => $uri->path
 );
-
 ?>
 ```
 
@@ -86,39 +79,53 @@ Does not use SSL
 <a href="http://example.com/path/to/file.ext?q=1">example.com/path/to/file.ext</a>
 ```
 
-####Example #3: Production Code
+####Example #3: Works With A Wide Range Of URIs####
 
-By default, the `append()`, `prepend()`, and `replace()` functions have a safety feature to help prevent errors. This feature often uses regex (slow) to validate the input, and it is recommended that you disable the safety whenever you know the input will be correctly formatted.
-
-Keep in mind that the safety is only meant to prevent most errors, not to make up for crappy code.
+Works perfectly with email, skype, and ssh URIs. The parser is based directly off the URI standard, so it will work well with uncommon and new URI types.
 
 ```php
 <?php
-$uri = new uri('http://example.com/path/to/file.ext');
+$uri1 = new uri('git@github.com:ProjectCleverWeb/PHP-URI.git');
+$uri2 = new uri('example@gmail.com');
+$uri3 = new uri('ftp://jdoe:pass1234@my-server.com/public_html');
 
-$hardcoded  = 'john%20doe%3F';
-$user_input = 'john doe?';
+// Publish you source to multiple services?
+echo $uri1.PHP_EOL; // PHP will automatically get the current URI
+echo $uri1->replace('HOST', 'gitlab.com').PHP_EOL;
+echo $uri1->replace('HOST', 'bitbucket.org').PHP_EOL.PHP_EOL;
 
-echo $uri->replace('USER', $hardcoded, 1).PHP_EOL; // OK (the space is already encoded)
+// Quick and easy email template URI
+$uri2->replace('SCHEME', 'mailto:');
+printf(
+	'<a href="%1$s">%2$s</a>'.PHP_EOL.PHP_EOL,
+	$uri2->replace('QUERY', array(
+		'subject' => 'Re: [Suggestion Box]',
+		'body'    => 'More snickers in the break room please!'
+	)),
+	$uri2->authority
+);
 
-$uri->reset();
-echo $uri->replace('USER', $user_input).PHP_EOL; // OK (special characters get encoded)
-
-$uri->reset();
-echo $uri->replace('USER' ,$user_input, 1).PHP_EOL; // NOT OK (a browser may encode the spaces but the "?" will cause errors)
-
+// change FTP user/path/port/type
+$uri3->replace('SCHEME_NAME', 'sftp');
+$uri3->replace('PATH', '/admin/configuration');
+$uri3->replace('PORT', '22');
+$uri3->replace('USER', 'admin');
+echo $uri3->replace('PASS', 'secure-pass-123');
 ?>
 ```
 
 **Output:**
 ```
-http://john%20doe%3F@example.com/path/to/file.ext
-http://john%20doe%3F@example.com/path/to/file.ext
-http://john doe?@example.com/path/to/file.ext
+git@github.com:ProjectCleverWeb/PHP-URI.git
+git@gitlab.com:ProjectCleverWeb/PHP-URI.git
+git@bitbucket.org:ProjectCleverWeb/PHP-URI.git
+
+<a href="mailto:example@gmail.com?subject=Re%3A%20%5BSuggestion%20Box%5D&body=More%20snickers%20in%20the%20break%20room%20please%21">example@gmail.com</a>
+
+sftp://admin:secure-pass-123@my-server.com:22/admin/configuration
 ```
 
-
-##Copyright &amp; Licensing
+##License##
 
 >The MIT License (MIT)
 >
