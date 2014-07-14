@@ -101,7 +101,7 @@ class uri {
 	 * @return void
 	 */
 	public function __invoke($input) {
-		__construct($input);
+		$this->__construct($input);
 	}
 	
 	
@@ -390,15 +390,26 @@ class uri {
 		$arr = explode('/',$this->path);
 		$last = count($arr) - 1;
 			
-		if ($arr[$last] == '') {
+		if (isset($arr[$last]) && $arr[$last] == '') {
 			unset($arr[$last]);
 		}
-		if ($arr[0] == '') {
+		if (isset($arr[0]) && $arr[0] == '') {
 			array_shift($arr);
 		}
 		$info['array'] = $arr;
 		
-		return $info;
+		$defaults = array(
+			'dirname' => '',
+			'basename' => '',
+			'extension' => '',
+			'filename' => '',
+			'array' => array()
+		);
+		
+		$return = $info + $defaults;
+		ksort($return);
+		
+		return $return;
 	}
 	
 	/**
