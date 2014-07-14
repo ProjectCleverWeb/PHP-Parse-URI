@@ -320,7 +320,7 @@ class uri {
 		$t = $this;
 		$t->gen_scheme();
 		$t->gen_authority();
-		$str_arr = '';
+		$str_arr = array();
 		if (!empty($t->scheme)) {
 			$str_arr[] = $t->scheme;
 		}
