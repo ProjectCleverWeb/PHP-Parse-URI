@@ -8,4 +8,4 @@ build:
                     format: php-clover
     environment:
         php:
-            version: 5.5.14
+            version: 5.5.12
