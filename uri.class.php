@@ -578,7 +578,7 @@ class uri {
 			
 			case 'QUERY':
 				if (is_array($str)) {
-					$str = http_build_query($str);
+					$str = http_build_query($str, '', '&', PHP_QUERY_RFC3986);
 				}
 				if ($str[0] == '?') {
 					$str = substr($str, 1);
