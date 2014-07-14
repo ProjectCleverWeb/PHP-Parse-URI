@@ -4,7 +4,6 @@ require_once __DIR__.'/uri.class.php';
 
 /**
  * @requires PHP 5.3.7
- * @requires PHPUnit 4.1
  */
 class URITest extends PHPUnit_Framework_TestCase {
 	
