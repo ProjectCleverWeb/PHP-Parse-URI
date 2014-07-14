@@ -87,7 +87,7 @@ class uri {
 	 * If this class gets typecast as a sting it should
 	 * return the current URI as a string.
 	 * 
-	 * @return string The current URI.
+	 * @return false|string The current URI.
 	 */
 	public function __toString() {
 		return $this->str();
@@ -115,7 +115,7 @@ class uri {
 	 * variables in the class.
 	 * 
 	 * @param  string $uri The string to be parsed.
-	 * @return void
+	 * @return boolean
 	 */
 	private function parse($uri) {
 		$t = $this;
@@ -123,7 +123,7 @@ class uri {
 		if (empty($parsed)) {
 			$t->error = TRUE;
 			$t->error_msg = 'Could not parse the input as a URI';
-			return $parsed;
+			return FALSE;
 		}
 		$defaults = array(
 			'scheme'         => '',
@@ -153,7 +153,7 @@ class uri {
 		$t->fragment       = $values['fragment'];
 		
 		$t->gen_authority();
-		return true;
+		return TRUE;
 	}
 	
 	/**
@@ -167,8 +167,8 @@ class uri {
 	 * parse_url(). This is because of how the URI
 	 * specification allows special characters.
 	 * 
-	 * @param  string $uri The string to be parsed
-	 * @return array       The correctly parsed string as an array
+	 * @param  string $uri                The string to be parsed
+	 * @return false|array<string,string> The correctly parsed string as an array
 	 */
 	private function _parse($uri) {
 		settype($uri, 'string');
@@ -219,45 +219,46 @@ class uri {
 	/**
 	 * Standard function to re-genrate $authority
 	 * 
-	 * @return void
+	 * @return boolean
 	 */
 	public function gen_authority() {
 		if ($this->error) {
 			return FALSE;
 		}
-		$t = $this;
 		$authority = '';
 		
-		if (!empty($t->user)) {
-			$authority .= $t->user;
-			if (empty($t->pass)) {
+		if (!empty($this->user)) {
+			$authority .= $this->user;
+			if (empty($this->pass)) {
 				$authority .= '@';
 			} else {
 				$authority .= ':';
 			}
 		}
-		if (!empty($t->pass)) {
-			$authority .= $t->pass.'@';
+		if (!empty($this->pass)) {
+			$authority .= $this->pass.'@';
 		}
-		if (!empty($t->host)) {
-			$authority .= $t->host;
+		if (!empty($this->host)) {
+			$authority .= $this->host;
 		}
-		if (!empty($t->port)) {
-			$authority .= ':'.$t->port;
+		if (!empty($this->port)) {
+			$authority .= ':'.$this->port;
 		}
-		$t->authority = $authority;
+		$this->authority = $authority;
+		return TRUE;
 	}
 	
 	/**
 	 * Standard function to re-genrate $scheme
 	 * 
-	 * @return void
+	 * @return boolean
 	 */
 	public function gen_scheme() {
 		if ($this->error) {
 			return FALSE;
 		}
 		$this->scheme = $this->scheme_name.$this->scheme_symbols;
+		return TRUE;
 	}
 	
 	/**
@@ -265,7 +266,7 @@ class uri {
 	 * array similar to parse_url(). However it always
 	 * sets each key as an empty string by default.
 	 * 
-	 * @return array The URI as an array.
+	 * @return false|array The URI as an array.
 	 */
 	public function arr() {
 		if ($this->error) {
@@ -301,7 +302,7 @@ class uri {
 	
 	/**
 	 * Alias of arr()
-	 * @return array The URI as an array.
+	 * @return false|array The URI as an array.
 	 */
 	public function to_array() {
 		return $this->arr();
@@ -310,7 +311,7 @@ class uri {
 	/**
 	 * Returns the current URI as a string.
 	 * 
-	 * @return string The current URI.
+	 * @return false|string The current URI.
 	 */
 	public function str() {
 		if ($this->error) {
@@ -352,7 +353,7 @@ class uri {
 	
 	/**
 	 * alias of str()
-	 * @return string The current URI.
+	 * @return false|string The current URI.
 	 */
 	public function to_string() {
 		return $this->str();
@@ -361,13 +362,14 @@ class uri {
 	/**
 	 * Prints the current URI.
 	 * 
-	 * @return void
+	 * @return boolean
 	 */
 	public function p_str() {
 		if ($this->error) {
 			return FALSE;
 		}
 		echo $this->str();
+		return TRUE;
 	}
 	
 	/**
@@ -402,7 +404,7 @@ class uri {
 	/**
 	 * Returns the query string parsed into an array
 	 * 
-	 * @return array $query as an array
+	 * @return false|null|array $query as an array
 	 */
 	public function query_arr() {
 		if ($this->error) {
@@ -416,9 +418,9 @@ class uri {
 	 * Appends $str to $section. By default it tries to
 	 * autocorrect some errors.
 	 * 
-	 * @param  string  $section        The section to append to.
-	 * @param  string  $str            The string to append.
-	 * @return string                  The resulting URI.
+	 * @param  string  $section The section to append to.
+	 * @param  string  $str     The string to append.
+	 * @return false|string     The resulting URI.
 	 */
 	public function append($section, $str) {
 		if ($this->error) {
@@ -443,9 +445,9 @@ class uri {
 	 * Prepends $str to $section. By default it tries to
 	 * autocorrect some errors.
 	 * 
-	 * @param  string  $section        The section to prepend to.
-	 * @param  string  $str            The string to prepend.
-	 * @return string                  The resulting URI.
+	 * @param  string  $section The section to prepend to.
+	 * @param  string  $str     The string to prepend.
+	 * @return false|string     The resulting URI.
 	 */
 	public function prepend($section, $str) {
 		if ($this->error) {
@@ -470,9 +472,9 @@ class uri {
 	 * Replaces $section with $str. By default it tries
 	 * to autocorrect some errors.
 	 * 
-	 * @param  string  $section        The section to replace.
-	 * @param  string  $str            The string to replace $section with.
-	 * @return string                  The resulting URI.
+	 * @param  string  $section The section to replace.
+	 * @param  string  $str     The string to replace $section with.
+	 * @return false|string     The resulting URI.
 	 */
 	public function replace($section, $str) {
 		if ($this->error) {
@@ -603,7 +605,6 @@ class uri {
 			
 			default:
 				return FALSE;
-				break;
 		}
 		
 		if ($err) {
