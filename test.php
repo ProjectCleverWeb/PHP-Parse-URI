@@ -142,11 +142,17 @@ class URITest extends PHPUnit_Framework_TestCase {
 		// Check For Errors
 		$this->assertEmpty($uri1->error);
 		
-		// Check Output
+		// Check Var Aliases
 		$this->assertSame($uri1->scheme, $uri1->protocol);
 		$this->assertSame($uri1->user, $uri1->username);
 		$this->assertSame($uri1->pass, $uri1->password);
-		$this->assertSame($uri1->fqdn, $uri1->fqdn);
+		$this->assertSame($uri1->host, $uri1->fqdn);
+		$this->assertSame($uri1->host, $uri1->domain);
+		
+		// Check Method Aliases
+		$this->assertSame($uri1->arr(), $uri1->to_array());
+		$this->assertSame($uri1->str(), $uri1->to_string());
+		$this->assertSame($uri1->str(), $uri1->__toString());
 	}
 	
 	/**
@@ -169,6 +175,7 @@ class URITest extends PHPUnit_Framework_TestCase {
 	 * @depends Simple_Replace
 	 * @depends Simple_Output
 	 * @depends Aliases
+	 * @depends Error_Catching
 	 */
 	public function Reset() {
 		$uri1 = new uri('example.com/original/path');
@@ -529,7 +536,60 @@ class URITest extends PHPUnit_Framework_TestCase {
 		);
 	}
 	
-	
+	/**
+	 * @test
+	 * @depends Reset
+	 */
+	public function To_Array() {
+		// Test both when there is and isn't pre-existing data
+		$uri1 = new uri('example.com');
+		$uri2 = new uri('https://user:pass@example.com:777/path/to/script.php?query=str#fragment');
+		
+		// Check For Errors
+		$this->assertEmpty($uri1->error);
+		$this->assertEmpty($uri2->error);
+		
+		// Setup
+		$arr1 = $uri1->arr();
+		$arr2 = $uri2->arr();
+		
+		// Check that all keys are set (even if empty)
+		$this->assertArrayHasKey('authority', $arr1);
+		$this->assertArrayHasKey('domain', $arr1);
+		$this->assertArrayHasKey('fqdn', $arr1);
+		$this->assertArrayHasKey('fragment', $arr1);
+		$this->assertArrayHasKey('host', $arr1);
+		$this->assertArrayHasKey('pass', $arr1);
+		$this->assertArrayHasKey('path', $arr1);
+		$this->assertArrayHasKey('port', $arr1);
+		$this->assertArrayHasKey('protocol', $arr1);
+		$this->assertArrayHasKey('query', $arr1);
+		$this->assertArrayHasKey('scheme', $arr1);
+		$this->assertArrayHasKey('scheme_name', $arr1);
+		$this->assertArrayHasKey('scheme_symbols', $arr1);
+		$this->assertArrayHasKey('user', $arr1);
+		$this->assertArrayHasKey('username', $arr1);
+		
+		// Check Key Aliases
+		$this->assertSame($arr2['scheme'], $arr2['protocol']);
+		$this->assertSame($arr2['user'], $arr2['username']);
+		$this->assertSame($arr2['pass'], $arr2['password']);
+		$this->assertSame($arr2['host'], $arr2['domain']);
+		$this->assertSame($arr2['host'], $arr2['fqdn']);
+		
+		// Check Values
+		$this->assertEquals('user:pass@example.com:777', $arr2['authority']);
+		$this->assertEquals('fragment', $arr2['fragment']);
+		$this->assertEquals('example.com', $arr2['host']);
+		$this->assertEquals('pass', $arr2['pass']);
+		$this->assertEquals('/path/to/script.php', $arr2['path']);
+		$this->assertEquals('777', $arr2['port']);
+		$this->assertEquals('query=str', $arr2['query']);
+		$this->assertEquals('https://', $arr2['scheme']);
+		$this->assertEquals('https', $arr2['scheme_name']);
+		$this->assertEquals('://', $arr2['scheme_symbols']);
+		$this->assertEquals('user', $arr2['user']);
+	}
 	
 	
 	
