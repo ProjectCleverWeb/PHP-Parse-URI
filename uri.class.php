@@ -225,26 +225,18 @@ class uri {
 		if ($this->error) {
 			return FALSE;
 		}
-		$authority = '';
+		$str_arr = array($this->user);
 		
-		if (!empty($this->user)) {
-			$authority .= $this->user;
-			if (empty($this->pass)) {
-				$authority .= '@';
-			} else {
-				$authority .= ':';
-			}
+		if (empty($this->user) == FALSE && empty($this->pass)) {
+			$str_arr[] = '@';
+		} elseif (!empty($this->user)) {
+			$str_arr[] = ':'.$this->pass.'@';
 		}
-		if (!empty($this->pass)) {
-			$authority .= $this->pass.'@';
-		}
-		if (!empty($this->host)) {
-			$authority .= $this->host;
-		}
+		$str_arr[] = $this->host;
 		if (!empty($this->port)) {
-			$authority .= ':'.$this->port;
+			$str_arr[] = ':'.$this->port;
 		}
-		$this->authority = $authority;
+		$this->authority = implode('', $str_arr);
 		return TRUE;
 	}
 	
@@ -374,18 +366,6 @@ class uri {
 		if ($this->error) {
 			return FALSE;
 		}
-		$info = pathinfo($this->path);
-		
-		$arr = explode('/',$this->path);
-		$last = count($arr) - 1;
-			
-		if (isset($arr[$last]) && $arr[$last] == '') {
-			unset($arr[$last]);
-		}
-		if (isset($arr[0]) && $arr[0] == '') {
-			array_shift($arr);
-		}
-		$info['array'] = $arr;
 		
 		$defaults = array(
 			'dirname' => '',
@@ -395,10 +375,11 @@ class uri {
 			'array' => array()
 		);
 		
-		$return = $info + $defaults;
-		ksort($return);
+		$info = pathinfo($this->path);
+		ksort($info);
+		$info['array'] = array_filter(explode('/',$this->path));
 		
-		return $return;
+		return $info + $defaults;
 	}
 	
 	/**
