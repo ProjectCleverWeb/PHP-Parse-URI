@@ -315,7 +315,7 @@ class uri {
 		$str_arr = array($t->scheme, $t->user);
 		if (empty($t->user) == FALSE && empty($t->pass)) {
 			$str_arr[] = '@';
-		} elseif (empty($t->user) == FALSE && empty($t->pass) == FALSE) {
+		} elseif (empty($t->user) == FALSE) {
 			$str_arr[] = ':'.$t->pass.'@';
 		}
 		$str_arr[] = $t->host;
@@ -377,7 +377,7 @@ class uri {
 		
 		$info = pathinfo($this->path);
 		ksort($info);
-		$info['array'] = array_filter(explode('/',$this->path));
+		$info['array'] = array_values(array_filter(explode('/',$this->path)));
 		
 		return $info + $defaults;
 	}
