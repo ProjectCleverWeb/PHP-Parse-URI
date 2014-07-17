@@ -309,25 +309,14 @@ class uri {
 		if ($this->error) {
 			return FALSE;
 		}
-		$t = $this;
-		$t->gen_scheme();
-		$t->gen_authority();
-		$str_arr = array($t->scheme, $t->user);
-		if (empty($t->user) == FALSE && empty($t->pass)) {
-			$str_arr[] = '@';
-		} elseif (empty($t->user) == FALSE) {
-			$str_arr[] = ':'.$t->pass.'@';
+		$this->gen_scheme();
+		$this->gen_authority();
+		$str_arr = array($this->scheme, $this->authority, $this->path);
+		if (!empty($this->query)) {
+			$str_arr[] = '?'.$this->query;
 		}
-		$str_arr[] = $t->host;
-		if (!empty($t->port)) {
-			$str_arr[] = ':'.$t->port;
-		}
-		$str_arr[] = $t->path;
-		if (!empty($t->query)) {
-			$str_arr[] = '?'.$t->query;
-		}
-		if (!empty($t->fragment)) {
-			$str_arr[] = '#'.$t->fragment;
+		if (!empty($this->fragment)) {
+			$str_arr[] = '#'.$this->fragment;
 		}
 		return implode('', $str_arr);
 	}
@@ -375,11 +364,11 @@ class uri {
 			'array' => array()
 		);
 		
-		$info = pathinfo($this->path);
-		ksort($info);
+		$info = pathinfo($this->path) + $defaults;
 		$info['array'] = array_values(array_filter(explode('/',$this->path)));
+		ksort($info);
 		
-		return $info + $defaults;
+		return $info;
 	}
 	
 	/**
